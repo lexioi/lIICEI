@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Лицей</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Unbounded:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F6FB;--sur:#fff;--s2:#F0F2F8;--s3:#E8ECF4;
+  --pri:#5B8EF0;--pli:#EEF3FE;--pda:#3A6CD4;
+  --acc:#F5A623;--grn:#34C0A0;--vio:#9B59B6;
+  --dan:#F05B5B;--war:#F5A623;
+  --tx:#1A1D2E;--t2:#6B7280;--t3:#A0A9B8;
+  --bor:#E8ECF4;
+  --sh:0 2px 16px rgba(91,142,240,.10);
+  --sh2:0 4px 32px rgba(91,142,240,.16);
+  --r:20px;--rsm:12px;
+  --nav:68px;--top:60px;
+  --font:'Nunito',sans-serif;--fdi:'Unbounded',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;background:var(--bg);font-family:var(--font);color:var(--tx);-webkit-tap-highlight-color:transparent;}
+#app{display:flex;flex-direction:column;height:100vh;max-width:480px;margin:0 auto;position:relative;background:var(--bg);overflow:hidden;}
+.screen{display:none;flex-direction:column;flex:1;overflow:hidden;}
+.screen.active{display:flex;}
+.sb{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.sb::-webkit-scrollbar{width:3px;}
+.sb::-webkit-scrollbar-thumb{background:var(--bor);border-radius:3px;}
+/* TOPBAR */
+.topbar{height:var(--top);background:var(--sur);display:flex;align-items:center;padding:0 12px;gap:8px;
+  border-bottom:1.5px solid var(--bor);z-index:10;flex-shrink:0;box-shadow:0 2px 8px rgba(91,142,240,.06);}
+.bk{width:36px;height:36px;border-radius:50%;background:var(--s2);display:flex;align-items:center;
+  justify-content:center;cursor:pointer;flex-shrink:0;border:none;transition:background .15s;font-size:18px;}
+.bk:active{background:var(--bor);}
+.tw{flex:1;min-width:0;}
+.ttl{font-family:var(--fdi);font-size:13px;font-weight:700;color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sub{font-size:11px;color:var(--t2);margin-top:1px;}
+.ib{width:36px;height:36px;border-radius:50%;background:transparent;display:flex;align-items:center;
+  justify-content:center;cursor:pointer;border:none;flex-shrink:0;transition:background .15s;font-size:18px;}
+.ib:active{background:var(--s2);}
+/* BOTTOM NAV */
+.bnav{height:var(--nav);background:var(--sur);display:flex;align-items:stretch;
+  border-top:1.5px solid var(--bor);flex-shrink:0;z-index:10;box-shadow:0 -2px 12px rgba(91,142,240,.07);}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;gap:3px;color:var(--t3);border:none;background:transparent;position:relative;padding:6px 2px;transition:color .15s;}
+.ni.act{color:var(--pri);}
+.ni-icon{font-size:20px;line-height:1;}
+.ni-lbl{font-size:9px;font-weight:800;letter-spacing:.3px;}
+.nbdg{position:absolute;top:5px;right:calc(50% - 20px);background:var(--dan);color:#fff;
+  font-size:9px;font-weight:800;border-radius:20px;padding:1px 5px;min-width:16px;text-align:center;}
+/* AUTH */
+.auth-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px 40px;gap:6px;}
+.auth-logo{font-size:60px;margin-bottom:4px;}
+.auth-app{font-family:var(--fdi);font-size:26px;font-weight:700;}
+.auth-city{font-size:13px;color:var(--t2);margin-bottom:16px;}
+.auth-card{background:var(--sur);border-radius:var(--r);padding:22px;width:100%;max-width:360px;box-shadow:var(--sh2);}
+.auth-card-ttl{font-size:15px;font-weight:800;margin-bottom:12px;}
+.auth-inp{width:100%;background:var(--s2);border:2px solid var(--bor);outline:none;border-radius:var(--rsm);
+  padding:13px 16px;font-family:var(--font);font-size:16px;color:var(--tx);letter-spacing:2px;font-weight:700;
+  text-transform:uppercase;transition:border-color .2s;}
+.auth-inp:focus{border-color:var(--pri);}
+.auth-inp::placeholder{letter-spacing:0;font-weight:400;color:var(--t3);}
+.auth-err{color:var(--dan);font-size:13px;font-weight:700;margin-top:8px;text-align:center;}
+.demo-hint{background:var(--s2);border-radius:var(--rsm);padding:12px;width:100%;max-width:360px;margin-top:6px;}
+.demo-hint-ttl{font-size:10px;font-weight:800;color:var(--t3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;}
+.demo-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;cursor:pointer;}
+.demo-code{font-family:monospace;font-size:13px;font-weight:800;color:var(--pri);letter-spacing:1px;}
+.demo-role{font-size:12px;color:var(--t2);}
+/* FORMS */
+.fl{font-size:11px;font-weight:800;color:var(--t3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px;display:block;}
+.fi{width:100%;background:var(--s2);border:2px solid var(--bor);outline:none;border-radius:var(--rsm);
+  padding:11px 13px;font-family:var(--font);font-size:14px;color:var(--tx);transition:border-color .2s;margin-bottom:10px;}
+.fi:focus{border-color:var(--pri);}
+.fi:disabled{opacity:.55;cursor:not-allowed;}
+.fta{width:100%;background:var(--s2);border:2px solid var(--bor);outline:none;border-radius:var(--rsm);
+  padding:11px 13px;font-family:var(--font);font-size:14px;color:var(--tx);resize:none;min-height:80px;
+  transition:border-color .2s;margin-bottom:10px;}
+.fta:focus{border-color:var(--pri);}
+.sel-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;}
+.chip{padding:7px 14px;border-radius:30px;border:2px solid var(--bor);background:var(--sur);
+  font-family:var(--font);font-size:13px;font-weight:700;color:var(--t2);cursor:pointer;transition:all .15s;}
+.chip.on{background:var(--pri);border-color:var(--pri);color:#fff;}
+.chip:active{transform:scale(.95);}
+.btn{background:var(--pri);color:#fff;border:none;border-radius:var(--rsm);padding:14px;
+  font-family:var(--font);font-size:15px;font-weight:800;cursor:pointer;width:100%;
+  transition:all .12s;box-shadow:0 4px 16px rgba(91,142,240,.3);margin-top:4px;}
+.btn:active{transform:scale(.98);background:var(--pda);}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.btn2{background:var(--s2);color:var(--tx);border:none;border-radius:var(--rsm);padding:12px;
+  font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;width:100%;transition:all .12s;margin-top:4px;}
+.btn2:active{background:var(--bor);}
+.btnd{background:var(--dan);color:#fff;border:none;border-radius:var(--rsm);padding:10px 16px;
+  font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:all .12s;}
+.shdr{padding:10px 14px 4px;font-size:10px;font-weight:800;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;}
+/* STORIES */
+.stories-bar{display:flex;gap:12px;padding:12px 14px;background:var(--sur);border-bottom:1.5px solid var(--bor);overflow-x:auto;flex-shrink:0;}
+.stories-bar::-webkit-scrollbar{display:none;}
+.story-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;flex-shrink:0;}
+.story-ring{width:56px;height:56px;border-radius:50%;padding:2px;background:linear-gradient(135deg,var(--pri),#F5A623,#E74C3C);position:relative;}
+.story-ring.seen{background:var(--bor);}
+.story-ring.add{background:var(--pli);border:2px dashed var(--pri);}
+.story-av{width:100%;height:100%;border-radius:50%;background:var(--sur);display:flex;align-items:center;justify-content:center;font-size:24px;border:2px solid var(--sur);}
+.story-name{font-size:10px;font-weight:700;color:var(--t2);max-width:56px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+/* CHAT CARD */
+.cc{display:flex;align-items:center;gap:11px;padding:11px 14px;background:var(--sur);
+  cursor:pointer;border-bottom:1px solid var(--bor);transition:background .12s;}
+.cc:active,.cc:hover{background:var(--pli);}
+.cc.pin{border-left:3px solid var(--pri);}
+.av{width:50px;height:50px;border-radius:15px;background:linear-gradient(135deg,var(--pri),#7B6EF6);
+  display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 2px 8px rgba(91,142,240,.18);}
+.av.grn{background:linear-gradient(135deg,var(--grn),#2EA880);}
+.av.ora{background:linear-gradient(135deg,var(--acc),#F07C23);}
+.av.vio{background:linear-gradient(135deg,var(--vio),#7B6EF6);}
+.av.red{background:linear-gradient(135deg,#E74C3C,var(--dan));}
+.av.blu{background:linear-gradient(135deg,#3498DB,#2980B9);}
+.av.tel{background:linear-gradient(135deg,#1ABC9C,#16A085);}
+.av.sm{width:38px;height:38px;border-radius:11px;font-size:17px;}
+.av.xs{width:28px;height:28px;border-radius:9px;font-size:14px;}
+.ci{flex:1;min-width:0;}
+.cn{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:5px;}
+.cl{font-size:13px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.7;margin-top:2px;}
+.cm{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;}
+.ct{font-size:11px;color:var(--t3);}
+.cmemb{display:flex;align-items:center;gap:3px;font-size:11px;color:var(--t3);}
+.ubdg{background:var(--pri);color:#fff;font-size:11px;font-weight:800;border-radius:20px;padding:2px 7px;min-width:20px;text-align:center;}
+.pchip{background:var(--pli);color:var(--pri);font-size:10px;font-weight:800;border-radius:6px;padding:2px 6px;}
+.rochip{background:#FFF3E0;color:#E65100;font-size:10px;font-weight:800;border-radius:6px;padding:2px 6px;}
+/* MESSAGES */
+.ma{flex:1;overflow-y:auto;padding:10px 12px 4px;display:flex;flex-direction:column;gap:5px;}
+.ma::-webkit-scrollbar{width:3px;}
+.ma::-webkit-scrollbar-thumb{background:var(--bor);border-radius:3px;}
+.dsep{text-align:center;margin:6px 0;}
+.dsep span{background:rgba(91,142,240,.1);color:var(--t2);font-size:11px;font-weight:700;border-radius:20px;padding:3px 12px;}
+.mw{display:flex;flex-direction:column;max-width:82%;}
+.mw.me{align-self:flex-end;align-items:flex-end;}
+.mw.ot{align-self:flex-start;align-items:flex-start;}
+.msender{font-size:11px;font-weight:800;color:var(--pri);margin-bottom:2px;padding:0 4px;}
+.mb{border-radius:18px;padding:9px 13px;font-size:14px;line-height:1.5;word-break:break-word;box-shadow:0 1px 4px rgba(0,0,0,.07);}
+.mb.me{background:var(--pri);color:#fff;border-bottom-right-radius:5px;}
+.mb.ot{background:var(--sur);color:var(--tx);border-bottom-left-radius:5px;}
+.tme{font-size:10px;color:rgba(255,255,255,.65);margin-left:8px;display:inline-block;vertical-align:bottom;}
+.tot{font-size:10px;color:var(--t3);margin-top:3px;padding:0 4px;}
+.rsnip{background:rgba(91,142,240,.1);border-left:3px solid var(--pri);border-radius:10px;padding:5px 8px;margin-bottom:5px;}
+.rsnip-n{font-size:11px;font-weight:800;color:var(--pri);}
+.rsnip-t{font-size:12px;color:var(--t2);margin-top:1px;}
+.fwdsnip{background:rgba(52,192,160,.1);border-left:3px solid var(--grn);border-radius:10px;padding:5px 8px;margin-bottom:5px;font-size:12px;color:var(--t2);}
+.reacts{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;}
+.rbtn{background:var(--sur);border:1.5px solid var(--bor);border-radius:20px;padding:3px 8px;
+  font-size:13px;cursor:pointer;display:flex;align-items:center;gap:3px;transition:all .12s;}
+.rbtn:active{transform:scale(1.15);}
+.rbtn.on{background:var(--pli);border-color:var(--pri);}
+.rcnt{font-size:11px;color:var(--t2);font-weight:700;}
+.pbar{background:var(--pli);border-bottom:1.5px solid var(--bor);padding:8px 14px;display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.pbar-t{font-size:12px;color:var(--pri);font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* CHAT INPUT */
+.ciw{background:var(--sur);border-top:1.5px solid var(--bor);padding:10px 12px;display:flex;align-items:flex-end;gap:8px;flex-shrink:0;}
+.rbar{background:var(--pli);border-top:2px solid var(--pri);padding:8px 14px;display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.rbar-t{flex:1;font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rcl{background:none;border:none;font-size:20px;color:var(--t3);cursor:pointer;line-height:1;}
+.atb{width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;background:var(--s2);
+  display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;transition:all .12s;}
+.atb:active{background:var(--bor);}
+.snd{width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;background:var(--pri);
+  display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;transition:all .12s;}
+.snd:active{background:var(--pda);transform:scale(.95);}
+.mi{flex:1;background:var(--s2);border:none;outline:none;border-radius:20px;padding:10px 14px;
+  font-family:var(--font);font-size:14px;color:var(--tx);resize:none;max-height:100px;line-height:1.4;}
+.mi::placeholder{color:var(--t3);}
+.cro{background:var(--s2);border-top:1.5px solid var(--bor);padding:14px;text-align:center;font-size:13px;color:var(--t3);flex-shrink:0;}
+.cpb{background:var(--sur);border-top:1.5px solid var(--bor);padding:10px 14px;flex-shrink:0;}
+/* COMMENTS */
+.cmts{border-top:1px solid var(--bor);margin-top:8px;padding-top:8px;}
+.cmt{display:flex;gap:8px;margin-bottom:7px;}
+.cmt-bub{background:var(--s2);border-radius:13px;padding:7px 11px;flex:1;}
+.cmt-n{font-size:11px;font-weight:800;color:var(--pri);}
+.cmt-t{font-size:13px;color:var(--tx);margin-top:2px;line-height:1.4;}
+.cmt-tm{font-size:10px;color:var(--t3);margin-top:2px;}
+.cmttog{font-size:12px;font-weight:700;color:var(--pri);cursor:pointer;margin-top:5px;display:flex;align-items:center;gap:4px;}
+.cmt-ir{display:flex;gap:8px;margin-top:8px;align-items:center;}
+.cmt-in{flex:1;background:var(--s2);border:none;outline:none;border-radius:13px;padding:8px 12px;font-family:var(--font);font-size:13px;color:var(--tx);}
+.cmt-snd{width:32px;height:32px;border-radius:50%;border:none;background:var(--pri);color:#fff;font-size:14px;cursor:pointer;flex-shrink:0;}
+/* NEWS */
+.npost{margin:10px 14px;background:var(--sur);border-radius:var(--r);padding:16px;box-shadow:var(--sh);}
+.ntag{display:inline-block;background:var(--pli);color:var(--pri);font-size:10px;font-weight:800;border-radius:6px;padding:2px 8px;margin-bottom:8px;}
+.nbod{font-size:14px;color:var(--tx);line-height:1.6;}
+.nmeta{display:flex;align-items:center;justify-content:space-between;margin-top:8px;}
+.nauth{font-size:11px;color:var(--t3);font-weight:600;}
+.ndate{font-size:11px;color:var(--t3);}
+.nacts{display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap;}
+.nrb{display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;
+  background:var(--s2);border:none;border-radius:20px;padding:5px 10px;font-family:var(--font);transition:all .12s;}
+.nrb:active{transform:scale(.95);}
+.nrb.on{background:var(--pli);}
+/* HW */
+.hwc{margin:8px 14px;background:var(--sur);border-radius:var(--r);padding:13px 14px;
+  box-shadow:var(--sh);display:flex;align-items:flex-start;gap:11px;}
+.hwi{width:42px;height:42px;border-radius:12px;background:var(--pli);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.hwinf{flex:1;min-width:0;}
+.hwsub{font-size:14px;font-weight:800;}
+.hwcls{font-size:11px;color:var(--pri);font-weight:700;margin-bottom:2px;}
+.hwtsk{font-size:13px;color:var(--t2);margin-top:2px;line-height:1.4;}
+.hwmet{display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap;}
+.hwdue{font-size:11px;font-weight:700;}
+.hwdue.sn{color:var(--dan);}
+.hwdue.ok{color:var(--grn);}
+.hwte{font-size:11px;color:var(--t3);}
+.hwchk{width:26px;height:26px;border-radius:50%;border:2px solid var(--bor);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .15s;font-size:13px;color:transparent;}
+.hwchk.dn{background:var(--grn);border-color:var(--grn);color:#fff;}
+/* PROFILE */
+.phero{background:linear-gradient(135deg,var(--pri),#7B6EF6);padding:28px 20px 22px;display:flex;flex-direction:column;align-items:center;gap:8px;}
+.pav{width:84px;height:84px;border-radius:26px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:40px;border:3px solid rgba(255,255,255,.4);cursor:pointer;}
+.pnm{font-family:var(--fdi);font-size:17px;color:#fff;font-weight:700;text-align:center;}
+.prchip{background:rgba(255,255,255,.2);color:#fff;font-size:12px;font-weight:800;border-radius:20px;padding:4px 14px;}
+.pbio{font-size:13px;color:rgba(255,255,255,.75);text-align:center;max-width:260px;line-height:1.4;}
+.pcard{background:var(--sur);border-radius:var(--r);margin:10px 14px 0;overflow:hidden;box-shadow:var(--sh);}
+.prow{display:flex;align-items:center;gap:11px;padding:12px 14px;border-bottom:1px solid var(--bor);}
+.prow:last-child{border-bottom:none;}
+.pric{font-size:18px;width:26px;text-align:center;flex-shrink:0;}
+.prinf{flex:1;min-width:0;}
+.prlb{font-size:11px;color:var(--t3);font-weight:700;}
+.prvl{font-size:14px;font-weight:600;color:var(--tx);margin-top:1px;}
+.prow.cl{cursor:pointer;}
+.prow.cl:active{background:var(--s2);}
+.prow.dng .prlb{color:var(--dan);}
+.gtag{display:inline-block;background:var(--pli);color:var(--pri);font-size:12px;font-weight:700;border-radius:8px;padding:3px 10px;margin:2px;}
+/* CODE */
+.cres{background:var(--pli);border-radius:var(--rsm);padding:16px;margin-bottom:14px;text-align:center;}
+.cres-c{font-family:monospace;font-size:26px;font-weight:800;color:var(--pri);letter-spacing:4px;}
+.cres-i{font-size:12px;color:var(--t2);margin-top:5px;}
+.cli{display:flex;align-items:center;gap:9px;padding:11px 14px;border-bottom:1px solid var(--bor);background:var(--sur);}
+.cbdg{font-family:monospace;font-size:13px;font-weight:800;color:var(--pri);background:var(--pli);border-radius:8px;padding:3px 9px;letter-spacing:1px;flex-shrink:0;}
+.cinf{flex:1;min-width:0;}
+.crn{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cmt2{font-size:11px;color:var(--t3);margin-top:1px;}
+.cus.yes{font-size:11px;font-weight:700;color:var(--t3);}
+.cus.no{font-size:11px;font-weight:700;color:var(--grn);}
+/* ADMIN */
+.adm-sec{margin:10px 14px 0;}
+.adm-ttl{font-size:13px;font-weight:800;color:var(--tx);margin-bottom:7px;}
+.adm-ui{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:var(--sur);border-bottom:1px solid var(--bor);}
+.adm-nm{font-size:14px;font-weight:700;}
+.adm-me{font-size:12px;color:var(--t2);}
+/* DM */
+.dm-list{display:flex;flex-direction:column;}
+/* MODAL */
+.mbd{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;display:none;}
+.mbd.op{display:block;}
+.modal{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:480px;
+  background:var(--sur);border-radius:var(--r) var(--r) 0 0;z-index:201;
+  transition:transform .28s cubic-bezier(.34,1.3,.64,1);max-height:90vh;overflow-y:auto;
+  padding-bottom:env(safe-area-inset-bottom,16px);}
+.modal.op{transform:translateX(-50%) translateY(0);}
+.mhan{width:44px;height:4px;background:var(--bor);border-radius:2px;margin:12px auto 14px;}
+.mttl{font-size:17px;font-weight:800;padding:0 20px 12px;border-bottom:1px solid var(--bor);}
+.mbod{padding:14px 20px 18px;}
+/* STORY VIEW */
+.sv-bg{position:fixed;inset:0;background:#000;z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.sv-close{position:absolute;top:16px;right:16px;font-size:28px;cursor:pointer;color:#fff;background:none;border:none;}
+.sv-card{background:var(--s2);border-radius:24px;padding:32px 24px;width:88%;max-width:340px;text-align:center;}
+.sv-av{font-size:64px;margin-bottom:12px;}
+.sv-name{font-family:var(--fdi);font-size:16px;font-weight:700;color:var(--tx);margin-bottom:8px;}
+.sv-text{font-size:16px;color:var(--tx);line-height:1.6;}
+.sv-time{font-size:12px;color:var(--t3);margin-top:12px;}
+/* CTX */
+.ctx{position:fixed;background:var(--sur);border-radius:var(--rsm);box-shadow:var(--sh2);padding:6px 0;z-index:300;min-width:180px;display:none;}
+.ctx.op{display:block;}
+.cxi{padding:11px 16px;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .1s;}
+.cxi:active{background:var(--s2);}
+.cxi.dng{color:var(--dan);}
+/* ATTACH */
+.ash{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:480px;
+  background:var(--sur);border-radius:var(--r) var(--r) 0 0;padding:16px 16px 32px;z-index:201;
+  transition:transform .25s cubic-bezier(.34,1.3,.64,1);}
+.ash.op{transform:translateX(-50%) translateY(0);}
+.agrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:12px;}
+.aopt{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;}
+.aopt-ic{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;}
+.aopt-lb{font-size:11px;font-weight:700;color:var(--t2);}
+/* OVERLAY */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:190;display:none;}
+.ov.op{display:block;}
+/* TOAST */
+.toast{position:fixed;bottom:calc(var(--nav) + 14px);left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--tx);color:#fff;font-size:13px;font-weight:700;border-radius:20px;
+  padding:10px 20px;z-index:400;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;}
+.toast.sh{opacity:1;transform:translateX(-50%) translateY(0);}
+/* EMPTY */
+.emp{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 24px;gap:10px;}
+.emp-ic{font-size:48px;opacity:.3;}
+.emp-t{font-size:14px;color:var(--t3);text-align:center;font-weight:600;max-width:220px;line-height:1.5;}
+/* TOGGLE */
+.tog{width:44px;height:24px;border-radius:12px;background:var(--bor);position:relative;cursor:pointer;transition:background .2s;border:none;flex-shrink:0;}
+.tog.on{background:var(--grn);}
+.tog::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.tog.on::after{left:23px;}
+/* FAB */
+.fab{position:fixed;bottom:calc(var(--nav) + 14px);right:16px;width:52px;height:52px;border-radius:50%;
+  background:var(--pri);border:none;cursor:pointer;display:none;align-items:center;justify-content:center;
+  font-size:26px;color:#fff;box-shadow:0 4px 20px rgba(91,142,240,.45);transition:transform .15s;z-index:50;line-height:1;}
+.fab:active{transform:scale(.93);}
+.fab.show{display:flex;}
+/* ONLINE DOT */
+.odot{position:absolute;bottom:-1px;right:-1px;width:11px;height:11px;border-radius:50%;background:#2DCE89;border:2px solid var(--sur);}
+/* READ CHECK */
+.rchk{font-size:10px;margin-left:4px;color:rgba(255,255,255,.7);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.cc,.npost,.hwc{animation:fadeUp .22s ease backwards;}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- AUTH -->
+<div class="screen active" id="screen-auth">
+  <div class="sb"><div class="auth-wrap">
+    <div class="auth-logo">🏛️</div>
+    <div class="auth-app">Лицей</div>
+    <div class="auth-city">г. Азова</div>
+    <div class="auth-card">
+      <div class="auth-card-ttl">Код доступа</div>
+      <input class="auth-inp" id="authInp" type="text" placeholder="Введите код…" maxlength="20"
+        oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')doAuth()">
+      <div style="height:10px;"></div>
+      <button class="btn" onclick="doAuth()">Войти →</button>
+      <div class="auth-err" id="authErr" style="display:none;"></div>
+    </div>
+    <div class="demo-hint">
+      <div class="demo-hint-ttl">Тестовые коды (нажмите чтобы вставить)</div>
+      <div id="demoCodes"></div>
+    </div>
+  </div></div>
+</div>
+
+<!-- REGISTER -->
+<div class="screen" id="screen-reg">
+  <div class="topbar">
+    <button class="bk" onclick="openScreen('screen-auth')">←</button>
+    <div class="tw"><div class="ttl">Создание профиля</div></div>
+  </div>
+  <div class="sb"><div style="padding:14px 16px 32px;" id="regBody"></div></div>
+</div>
+
+<!-- CHATS -->
+<div class="screen" id="screen-chats">
+  <div class="topbar">
+    <div class="tw"><div class="ttl">Лицей</div><div class="sub">г. Азова</div></div>
+    <button class="ib" id="srchBtn" onclick="toggleSearch()">🔍</button>
+    <button class="ib" id="admBtn" style="display:none;" onclick="openAdminScreen()">🛡️</button>
+  </div>
+  <div id="srchWrap" style="display:none;padding:8px 14px;background:var(--sur);border-bottom:1.5px solid var(--bor);">
+    <input style="width:100%;background:var(--s2);border:none;outline:none;border-radius:14px;padding:9px 14px;font-family:var(--font);font-size:14px;color:var(--tx);"
+      type="text" id="chatSearch" placeholder="Поиск…" oninput="renderChats(this.value)">
+  </div>
+  <div id="storiesBar" class="stories-bar" style="display:none;"></div>
+  <div class="sb" id="chatsList"></div>
+</div>
+
+<!-- NEWS FEED -->
+<div class="screen" id="screen-news">
+  <div class="topbar">
+    <div class="tw"><div class="ttl">Новости</div><div class="sub">лицей г. Азова</div></div>
+    <button class="ib" id="newsPostBtn" style="display:none;" onclick="openCreatePostModal(null)">✏️</button>
+  </div>
+  <div class="sb" id="newsFeed"></div>
+</div>
+
+<!-- HW -->
+<div class="screen" id="screen-hw">
+  <div class="topbar">
+    <div class="tw"><div class="ttl">Домашние задания</div></div>
+    <button class="ib" id="hwAddBtn" style="display:none;" onclick="openScreen('screen-hwcreate');renderHWCreate();">➕</button>
+  </div>
+  <div class="sb" id="hwList"></div>
+</div>
+
+<!-- PROFILE -->
+<div class="screen" id="screen-profile">
+  <div class="sb" id="profScroll"></div>
+</div>
+
+<!-- CODE -->
+<div class="screen" id="screen-code">
+  <div class="topbar"><div class="tw"><div class="ttl">Коды доступа</div></div></div>
+  <div class="sb" id="codeBody"></div>
+</div>
+
+<!-- DM LIST -->
+<div class="screen" id="screen-dms">
+  <div class="topbar">
+    <button class="bk" onclick="switchTab('chats')">←</button>
+    <div class="tw"><div class="ttl">Личные сообщения</div></div>
+  </div>
+  <div class="sb" id="dmList"></div>
+</div>
+
+<!-- CHAT VIEW -->
+<div class="screen" id="screen-chat">
+  <div class="topbar">
+    <button class="bk" onclick="closeChat()">←</button>
+    <div class="av sm" id="cvAv" style="flex-shrink:0;"></div>
+    <div class="tw" style="margin-left:6px;">
+      <div class="ttl" id="cvTtl"></div>
+      <div class="sub" id="cvSub"></div>
+    </div>
+    <button class="ib" onclick="showChatInfo()">⋯</button>
+  </div>
+  <div class="pbar" id="pbar" style="display:none;">
+    <span>📌</span><span class="pbar-t" id="pbarT"></span>
+  </div>
+  <div class="ma" id="msgsArea"></div>
+  <div class="rbar" id="rbar" style="display:none;">
+    <span>↩️</span><span class="rbar-t" id="rbarT"></span>
+    <button class="rcl" onclick="cancelReply()">×</button>
+  </div>
+  <div class="cro" id="cro" style="display:none;">📖 Только учителя и администрация могут писать здесь</div>
+  <div class="cpb" id="cpb" style="display:none;">
+    <button class="btn" onclick="openCreatePostModal(currentChatId)">✏️ Написать пост в канал</button>
+  </div>
+  <div class="ciw" id="ciw">
+    <button class="atb" onclick="toggleAttach()">📎</button>
+    <textarea class="mi" id="msgInp" placeholder="Сообщение…" rows="1"
+      oninput="autoResize(this)" onkeydown="msgKd(event)"></textarea>
+    <button class="snd" onclick="sendMsg()">➤</button>
+  </div>
+</div>
+
+<!-- CREATE GROUP -->
+<div class="screen" id="screen-cgroup">
+  <div class="topbar">
+    <button class="bk" onclick="switchTab('chats')">←</button>
+    <div class="tw"><div class="ttl">Создать группу</div></div>
+  </div>
+  <div class="sb"><div style="padding:14px 16px 32px;" id="cgBody"></div></div>
+</div>
+
+<!-- HW CREATE -->
+<div class="screen" id="screen-hwcreate">
+  <div class="topbar">
+    <button class="bk" onclick="switchTab('hw')">←</button>
+    <div class="tw"><div class="ttl">Новое задание</div></div>
+  </div>
+  <div class="sb"><div style="padding:14px 16px 32px;" id="hwcBody"></div></div>
+</div>
+
+<!-- ADMIN -->
+<div class="screen" id="screen-admin">
+  <div class="topbar">
+    <button class="bk" onclick="switchTab('profile')">←</button>
+    <div class="tw"><div class="ttl">Администратор</div></div>
+  </div>
+  <div class="sb" id="admBody"></div>
+</div>
+
+<!-- STORY VIEW -->
+<div id="storyView" style="display:none;" class="sv-bg">
+  <div style="width:100%;height:4px;background:rgba(255,255,255,.2);margin-bottom:20px;">
+    <div id="svProg" style="height:100%;background:#fff;border-radius:2px;width:0%;transition:width 5s linear;"></div>
+  </div>
+  <div class="sv-card" id="svCard"></div>
+  <button class="sv-close" onclick="closeStoryView()">×</button>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bnav" id="bnav" style="display:none;">
+  <button class="ni" id="ni-news" onclick="switchTab('news')"><div class="ni-icon">📰</div><div class="ni-lbl">Новости</div></button>
+  <button class="ni" id="ni-chats" onclick="switchTab('chats')"><div class="ni-icon">💬</div><div class="ni-lbl">Чаты</div><span class="nbdg" id="ubdg" style="display:none;"></span></button>
+  <button class="ni" id="ni-hw" onclick="switchTab('hw')"><div class="ni-icon">📚</div><div class="ni-lbl">ДЗ</div></button>
+  <button class="ni" id="ni-profile" onclick="switchTab('profile')"><div class="ni-icon">👤</div><div class="ni-lbl">Профиль</div></button>
+  <button class="ni" id="ni-code" style="display:none;" onclick="switchTab('code')"><div class="ni-icon">🔑</div><div class="ni-lbl">Код</div></button>
+</div>
+
+<!-- GLOBAL FABs -->
+<button class="fab" id="fab-chats" onclick="openScreen('screen-cgroup');renderCreateGroup();">＋</button>
+<button class="fab" id="fab-hw" onclick="openScreen('screen-hwcreate');renderHWCreate();" style="display:none;">＋</button>
+<button class="fab" id="fab-news" onclick="openCreatePostModal(null)" style="display:none;">✏️</button>
+
+<!-- OVERLAYS -->
+<div class="ov" id="ov" onclick="closeOverlays()"></div>
+<div class="ash" id="ash">
+  <div style="width:44px;height:4px;background:var(--bor);border-radius:2px;margin:0 auto 12px;"></div>
+  <div style="font-size:15px;font-weight:800;">Прикрепить</div>
+  <div class="agrid" id="agrid"></div>
+</div>
+<div class="ctx" id="ctx"></div>
+<div class="mbd" id="mbd" onclick="closeModal()"></div>
+<div class="modal" id="modal"><div id="mcon"></div></div>
+<div class="toast" id="toast"></div>
+</div>
+
+<script>
+'use strict';
+// ══ SUPABASE STUBS (replace with real SDK) ══
+// import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+// const sb=createClient(SUPABASE_URL,SUPABASE_ANON_KEY)
+const SB={
+  async upsertUser(u){saveState();},
+  async fetchMessages(cid){return S.msg[cid]||[];},
+  async sendMessage(m){saveState();},
+  async fetchHW(){return S.hw;},
+  async upsertHW(h){saveState();},
+  async fetchCodes(){return S.codes;},
+  async upsertCode(c){saveState();},
+};
+// ══ CONFIG ══
+const ADMIN_CODE='ADMIN2025';
+const SK='lc_v4';
+const RANK={admin:5,director:4,teacher:3,parent:2,student:1};
+const RLBL={admin:'Администратор',director:'Директор',teacher:'Учитель',parent:'Родитель',student:'Ученик'};
+const GRADES=[5,6,7,8,9,10,11];
+const LETTERS=['А','Б','В','Г'];
+const EMOJIS=['👨‍🎓','👩‍🎓','👨‍🏫','👩‍🏫','👨‍💼','👩‍💼','👦','👧','🧑','🧒','👱','🧔','🧑‍💻','🧑‍🔬','🧑‍🎨','🦊'];
+const SUBJ=['Математика','Физика','Химия','История','Биология','Литература','Русский язык','Английский язык','Информатика','География','Обществознание','ОБЖ','Физкультура'];
+const Semoji={Математика:'📐',Физика:'⚗️',Химия:'🧪',История:'📖',Биология:'🌿',Литература:'📝','Русский язык':'🖊️','Английский язык':'🌐',Информатика:'💻',География:'🗺️',Обществознание:'⚖️',ОБЖ:'🛡️',Физкультура:'⚽'};
+const AOPT=[{i:'🖼️',l:'Фото',b:'#EEF3FE'},{i:'🎥',l:'Видео',b:'#FEF3EE'},{i:'📄',l:'Файл',b:'#EEFEF6'},{i:'🎵',l:'Аудио',b:'#F3EEFE'},{i:'📍',l:'Место',b:'#FEEEEE'},{i:'📊',l:'Опрос',b:'#EEFAF3'},{i:'🗓️',l:'ДЗ',b:'#FEFAEE'},{i:'👤',l:'Контакт',b:'#EEF5FE'}];
+const DEMO=[
+  {code:'ADMIN2025',desc:'Администратор'},
+  {code:'TEACH001',desc:'Учитель (Волкова Е.)'},
+  {code:'DIR2025',desc:'Директор (Петров М.)'},
+  {code:'CLASS10A',desc:'Ученик 10А'},
+  {code:'PARENT01',desc:'Родитель 10А'},
+];
+// ══ STATE ══
+let S={currentUserId:null,users:[],codes:[],chats:[],msg:{},hw:[],hwDone:{},stories:[],notifs:true};
+let currentChatId=null,replyMsg=null;
+let srchOpen=false,storyTimer=null;
+function loadState(){try{const r=localStorage.getItem(SK);if(r)Object.assign(S,JSON.parse(r));}catch(e){}}
+function saveState(){try{localStorage.setItem(SK,JSON.stringify(S));}catch(e){}}
+function resetAll(){localStorage.removeItem(SK);S={currentUserId:null,users:[],codes:[],chats:[],msg:{},hw:[],hwDone:{},stories:[],notifs:true};seed();saveState();}
+// ══ SEED ══
+function seed(){
+  S.codes=[
+    {code:'TEACH001',role:'teacher',grade:null,letter:null,name:'Елена',surname:'Волкова',dob:'15.04.1985',used:false,usedBy:null,createdBy:'admin'},
+    {code:'DIR2025',role:'director',grade:null,letter:null,name:'Михаил',surname:'Петров',dob:'03.11.1972',used:false,usedBy:null,createdBy:'admin'},
+    {code:'CLASS10A',role:'student',grade:'10',letter:'А',name:'Алексей',surname:'Смирнов',dob:'12.03.2007',used:false,usedBy:null,createdBy:'admin'},
+    {code:'PARENT01',role:'parent',grade:'10',letter:'А',name:'Ирина',surname:'Смирнова',dob:'',used:false,usedBy:null,createdBy:'admin'},
+    {code:'CLASS9B',role:'student',grade:'9',letter:'Б',name:'Пётр',surname:'Козлов',dob:'05.07.2008',used:false,usedBy:null,createdBy:'admin'},
+  ];
+  S.chats=[
+    {id:'ch_news',name:'Новости лицея',type:'channel',grade:null,letter:null,emoji:'📢',col:'',desc:'Официальный канал лицея г. Азова',pinned:true,pinnedMsg:'Расписание каникул опубликовано',unread:2},
+    {id:'ch_10a_st',name:'10А · Ученики',type:'students',grade:'10',letter:'А',emoji:'📚',col:'grn',desc:'Чат учеников 10А',pinned:false,pinnedMsg:'Экзамен по физике — 27 мая, каб. 34',unread:5},
+    {id:'ch_10a_par',name:'10А · Родители',type:'parents',grade:'10',letter:'А',emoji:'👨‍👩‍👧',col:'ora',desc:'Чат родителей 10А',pinned:false,pinnedMsg:'',unread:0},
+    {id:'ch_9b_st',name:'9Б · Ученики',type:'students',grade:'9',letter:'Б',emoji:'📐',col:'vio',desc:'Чат учеников 9Б',pinned:false,pinnedMsg:'',unread:0},
+    {id:'ch_9b_par',name:'9Б · Родители',type:'parents',grade:'9',letter:'Б',emoji:'👨‍👩‍👦',col:'ora',desc:'Чат родителей 9Б',pinned:false,pinnedMsg:'',unread:0},
+    {id:'ch_adm',name:'Администратор',type:'dm_admin',grade:null,letter:null,emoji:'🛡️',col:'red',desc:'Написать администратору',pinned:false,pinnedMsg:'',unread:0},
+  ];
+  S.msg={
+    ch_news:[
+      {id:'mn1',fromId:'sys',from:'Администратор',text:'📌 Расписание каникул опубликовано на сайте лицея.',time:'09:00',date:'23.05',r:[{e:'👍',n:42,v:[]},{e:'❤️',n:18,v:[]}],pinned:true,comments:[{id:'c1',fromId:'ft',from:'Волкова Е.',av:'👩‍🏫',text:'Спасибо за оперативное информирование!',time:'09:15'}]},
+      {id:'mn2',fromId:'sys',from:'Администратор',text:'Завтра, 24 мая, общешкольная линейка в 8:45 на главном дворе. Форма одежды парадная.',time:'09:41',date:'23.05',r:[{e:'🎉',n:31,v:[]}],pinned:false,comments:[]},
+      {id:'mn3',fromId:'fdir',from:'Директор Петров М.А.',text:'Поздравляю всех с завершением учебного года! Результаты олимпиад на стенде.',time:'11:00',date:'22.05',r:[{e:'👏',n:55,v:[]},{e:'❤️',n:23,v:[]}],pinned:false,comments:[{id:'c2',fromId:'ft',from:'Волкова Е.',av:'👩‍🏫',text:'Наш класс занял 2 место по математике!',time:'11:30'}]},
+    ],
+    ch_10a_st:[
+      {id:'ms1',fromId:'ft',from:'Волкова Е.П.',text:'Доброе утро, 10А! Сегодня контрольная по физике в 3-й паре.',time:'08:05',date:'23.05',r:[{e:'😬',n:14,v:[]}],pinned:false},
+      {id:'ms2',fromId:'fs1',from:'Маша К.',text:'Кто нашёл учебник по истории?',time:'08:30',date:'23.05',r:[],pinned:false},
+      {id:'ms3',fromId:'fs2',from:'Саша Р.',text:'Кто решил последнюю задачу из ДЗ по алгебре?',time:'11:20',date:'23.05',r:[],pinned:false},
+    ],
+    ch_10a_par:[
+      {id:'mp1',fromId:'ft',from:'Волкова Е.П.',text:'Уважаемые родители! Родительское собрание в пятницу в 18:00 в каб. 24.',time:'15:00',date:'22.05',r:[{e:'👍',n:19,v:[]}],pinned:false},
+    ],
+    ch_9b_st:[{id:'mq1',fromId:'ft2',from:'Нечаев В.И.',text:'9Б, сдайте тетради с практической работой до пятницы!',time:'10:00',date:'23.05',r:[{e:'👍',n:8,v:[]}],pinned:false}],
+    ch_9b_par:[],
+    ch_adm:[{id:'mad1',fromId:'sys',from:'Администратор',text:'Здравствуйте! Напишите вопрос, я отвечу в ближайшее время.',time:'08:00',date:'23.05',r:[],pinned:false}],
+  };
+  S.hw=[
+    {id:'hw1',subject:'Математика',grade:'10',letter:'А',text:'Параграф 18, упр. 5–9 (письменно)',dueDate:'2025-05-25',teacher:'Волкова Е.П.',at:Date.now()},
+    {id:'hw2',subject:'Физика',grade:'10',letter:'А',text:'Задачник стр. 112, №3–7; подготовиться к контрольной',dueDate:'2025-05-25',teacher:'Волкова Е.П.',at:Date.now()},
+    {id:'hw3',subject:'История',grade:'9',letter:'Б',text:'Читать §24–25, ответить на вопросы',dueDate:'2025-05-26',teacher:'Нечаев В.И.',at:Date.now()},
+    {id:'hw4',subject:'Английский язык',grade:'10',letter:'А',text:'Упр. 4 стр. 98 письменно + топик «My Future Profession»',dueDate:'2025-05-27',teacher:'Сорокина И.В.',at:Date.now()},
+  ];
+  S.stories=[
+    {id:'st1',userId:'sys_admin',userName:'Администратор',emoji:'🛡️',text:'Сегодня — общешкольная линейка в 8:45!',color:'#5B8EF0',at:Date.now()-3600000,seen:[]},
+    {id:'st2',userId:'sys_teacher',userName:'Волкова Е.',emoji:'👩‍🏫',text:'Контрольная по физике — будьте готовы! Повторите §12–15.',color:'#34C0A0',at:Date.now()-7200000,seen:[]},
+  ];
+}
+// ══ HELPERS ══
+const ce=t=>document.createElement(t);
+function cu(){
+  if(!S.currentUserId)return null;
+  if(S.currentUserId==='admin')return{id:'admin',name:'',surname:'',role:'admin',grades:[{grade:null,letter:null}],dob:'',emoji:'🛡️',bio:'Системный администратор'};
+  return S.users.find(u=>u.id===S.currentUserId)||null;
+}
+function isAdmin(u){return u&&u.role==='admin';}
+function isStaff(u){return u&&(RANK[u.role]||0)>=3;}
+function rk(u){return u?(RANK[u.role]||0):0;}
+function uGrades(u){return u?(u.grades||[{grade:u.grade,letter:u.letter}]):[]; }
+// ══ ACCESS ══
+function canSee(u,c){
+  if(!u)return false;
+  if(isStaff(u)||isAdmin(u))return true;
+  if(c.type==='channel'||c.type==='dm_admin')return true;
+  if(c.type==='dm'){const ms=c.members||[];return ms.includes(u.id);}
+  const gs=uGrades(u);const match=gs.some(g=>g.grade===c.grade&&g.letter===c.letter);
+  if(c.type==='students')return match;
+  if(c.type==='parents')return match&&u.role==='parent';
+  if(c.type==='group')return(c.members||[]).includes(u.id);
+  return false;
+}
+function canPost(u,c){
+  if(!u)return false;
+  if(isAdmin(u))return true;
+  if(c.type==='channel')return isStaff(u);
+  if(c.type==='dm_admin')return true;
+  if(c.type==='dm')return(c.members||[]).includes(u.id);
+  if(c.type==='students')return u.role==='student'||isStaff(u);
+  if(c.type==='parents')return u.role==='parent'||isStaff(u);
+  if(c.type==='group')return true;
+  return isStaff(u);
+}
+function visChats(u){return S.chats.filter(c=>canSee(u,c));}
+// ══ NAV ══
+function openScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const noNav=['screen-auth','screen-reg','screen-chat','screen-cgroup','screen-hwcreate','screen-admin','screen-dms'];
+  document.getElementById('bnav').style.display=noNav.includes(id)?'none':'flex';
+  // FABs
+  document.getElementById('fab-chats').style.display=(id==='screen-chats'&&isStaff(cu()))?'flex':'none';
+  document.getElementById('fab-hw').style.display=(id==='screen-hw'&&isStaff(cu()))?'flex':'none';
+  document.getElementById('fab-news').style.display='none';
+}
+function switchTab(tab){
+  const map={news:'screen-news',chats:'screen-chats',hw:'screen-hw',profile:'screen-profile',code:'screen-code'};
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('act'));
+  const ni=document.getElementById('ni-'+tab);if(ni)ni.classList.add('act');
+  openScreen(map[tab]||'screen-chats');
+  if(tab==='news'){renderNews();}
+  if(tab==='chats'){renderChats('');renderStories();}
+  if(tab==='hw'){renderHW();}
+  if(tab==='profile'){renderProfile();}
+  if(tab==='code'){renderCodeTab();}
+}
+// ══ AUTH ══
+function doAuth(){
+  const code=document.getElementById('authInp').value.trim().toUpperCase();
+  const err=document.getElementById('authErr');err.style.display='none';
+  if(!code){showErr(err,'Введите код');return;}
+  if(code===ADMIN_CODE){S.currentUserId='admin';saveState();enterApp();return;}
+  const co=S.codes.find(c=>c.code===code);
+  if(!co){showErr(err,'Неверный код');return;}
+  if(co.used){showErr(err,'Этот код уже использован');return;}
+  renderReg(co);openScreen('screen-reg');
+}
+function showErr(el,msg){el.textContent=msg;el.style.display='block';}
+function renderReg(c){
+  const body=document.getElementById('regBody');body.innerHTML='';
+  const u={id:'u_'+Date.now(),name:c.name||'',surname:c.surname||'',role:c.role,grades:[{grade:c.grade,letter:c.letter}],dob:c.dob||'',emoji:'👨‍🎓',bio:''};
+  // Emoji picker
+  aLbl(body,'Аватарка');
+  const ep=ce('div');ep.style.cssText='display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;';
+  EMOJIS.forEach(em=>{
+    const b=ce('button');b.style.cssText='font-size:26px;border:2px solid transparent;border-radius:10px;padding:5px;cursor:pointer;background:var(--s2);transition:all .1s;';b.textContent=em;
+    if(em===u.emoji)b.style.borderColor='var(--pri)';
+    b.onclick=()=>{u.emoji=em;ep.querySelectorAll('button').forEach(x=>x.style.borderColor='transparent');b.style.borderColor='var(--pri)';};
+    ep.appendChild(b);
+  });body.appendChild(ep);
+  aLbl(body,'Имя');const ni=aInp(body,'text',c.name,'Имя');
+  aLbl(body,'Фамилия');const si=aInp(body,'text',c.surname,'Фамилия');
+  // Role display
+  aLbl(body,'Роль');const rd=ce('div');rd.className='fi';rd.style.opacity='.65';rd.textContent=RLBL[c.role]||c.role;body.appendChild(rd);
+  // Class display
+  if(c.grade&&c.letter){aLbl(body,'Класс');const cd=ce('div');cd.className='fi';cd.style.opacity='.65';cd.textContent=c.grade+c.letter;body.appendChild(cd);}
+  // DOB
+  let di=null;
+  if(c.role==='student'||c.role==='teacher'||c.role==='director'){aLbl(body,'Дата рождения'+(c.role==='student'?' *':''));di=aInp(body,'text',c.dob,'ДД.ММ.ГГГГ');}
+  // Bio
+  aLbl(body,'О себе (необязательно)');const bi=ce('textarea');bi.className='fta';bi.placeholder='Несколько слов…';body.appendChild(bi);
+  const btn=ce('button');btn.className='btn';btn.textContent='Создать профиль →';
+  btn.onclick=()=>{
+    u.name=ni.value.trim()||c.name||'Пользователь';u.surname=si.value.trim()||c.surname||'';
+    if(di)u.dob=di.value.trim();u.bio=bi.value.trim();
+    if(c.role==='student'&&!u.dob){showToast('Введите дату рождения');return;}
+    S.users.push(u);const co=S.codes.find(x=>x.code===c.code);if(co){co.used=true;co.usedBy=u.id;}
+    S.currentUserId=u.id;saveState();enterApp();
+  };body.appendChild(btn);
+}
+function aLbl(p,t){const l=ce('label');l.className='fl';l.textContent=t;p.appendChild(l);}
+function aInp(p,type,val,ph){const i=ce('input');i.type=type;i.className='fi';i.value=val||'';i.placeholder=ph||'';p.appendChild(i);return i;}
+// ══ ENTER APP ══
+function enterApp(){
+  const u=cu();if(!u){openScreen('screen-auth');return;}
+  // Show admin controls
+  document.getElementById('admBtn').style.display=isAdmin(u)?'flex':'none';
+  // Code tab
+  const ct=document.getElementById('ni-code');if(ct)ct.style.display=(rk(u)>=3||isAdmin(u))?'flex':'none';
+  // News post button
+  const npb=document.getElementById('newsPostBtn');if(npb)npb.style.display=(isStaff(u)||isAdmin(u))?'flex':'none';
+  // HW add button
+  const hab=document.getElementById('hwAddBtn');if(hab)hab.style.display=(isStaff(u)||isAdmin(u))?'flex':'none';
+  renderAttach();
+  renderDemoCodes();
+  renderAll();
+  switchTab('chats');
+}
+function renderAll(){renderChats('');renderNews();renderHW();renderProfile();renderCodeTab();renderStories();updateBadge();}
+// ══ STORIES ══
+function renderStories(){
+  const u=cu();const bar=document.getElementById('storiesBar');bar.innerHTML='';
+  if(!u){bar.style.display='none';return;}
+  bar.style.display='flex';
+  const now=Date.now();
+  const valid=S.stories.filter(s=>(now-s.at)<86400000); // 24h
+  // Add story button
+  const myStory=valid.find(s=>s.userId===u.id||(isAdmin(u)&&s.userId==='sys_admin'));
+  if(!myStory){
+    const item=ce('div');item.className='story-item';
+    const ring=ce('div');ring.className='story-ring add';ring.style.cssText='width:56px;height:56px;border-radius:50%;padding:2px;background:var(--pli);border:2px dashed var(--pri);display:flex;align-items:center;justify-content:center;cursor:pointer;';
+    ring.textContent='➕';ring.style.fontSize='24px';ring.onclick=openAddStoryModal;
+    const lbl=ce('div');lbl.className='story-name';lbl.textContent='История';
+    item.appendChild(ring);item.appendChild(lbl);bar.appendChild(item);
+  }
+  valid.forEach(s=>{
+    const seen=(s.seen||[]).includes(u.id||(isAdmin(u)?'admin':''));
+    const item=ce('div');item.className='story-item';
+    const ring=ce('div');ring.style.cssText='width:56px;height:56px;border-radius:50%;padding:2px;background:'+(seen?'var(--bor)':'linear-gradient(135deg,'+s.color+',#F5A623)')+';cursor:pointer;';
+    const inner=ce('div');inner.style.cssText='width:100%;height:100%;border-radius:50%;background:var(--sur);display:flex;align-items:center;justify-content:center;font-size:24px;border:2px solid var(--sur);';
+    inner.textContent=s.emoji;ring.appendChild(inner);ring.onclick=()=>openStory(s);
+    const lbl=ce('div');lbl.className='story-name';lbl.textContent=s.userName.split(' ')[0];
+    item.appendChild(ring);item.appendChild(lbl);bar.appendChild(item);
+  });
+}
+function openAddStoryModal(){
+  showModal('Добавить историю',body=>{
+    aLbl(body,'Текст истории');const ta=ce('textarea');ta.className='fta';ta.placeholder='Что хотите рассказать?';ta.style.minHeight='100px';body.appendChild(ta);
+    aLbl(body,'Цвет фона');
+    const colors=['#5B8EF0','#34C0A0','#F5A623','#E74C3C','#9B59B6','#1ABC9C','#E67E22'];
+    const cRow=ce('div');cRow.style.cssText='display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;';
+    let selCol=colors[0];
+    colors.forEach(col=>{
+      const cb=ce('div');cb.style.cssText='width:32px;height:32px;border-radius:50%;background:'+col+';cursor:pointer;border:3px solid transparent;transition:all .1s;';
+      if(col===selCol)cb.style.borderColor='var(--tx)';
+      cb.onclick=()=>{selCol=col;cRow.querySelectorAll('div').forEach(x=>x.style.borderColor='transparent');cb.style.borderColor='var(--tx)';};
+      cRow.appendChild(cb);
+    });body.appendChild(cRow);
+    const u=cu();
+    const btn=ce('button');btn.className='btn';btn.textContent='Опубликовать историю';
+    btn.onclick=()=>{
+      const t=ta.value.trim();if(!t){showToast('Введите текст');return;}
+      const story={id:'st_'+Date.now(),userId:isAdmin(u)?'sys_admin':u.id,userName:isAdmin(u)?'Администратор':(u.name+' '+u.surname),emoji:u.emoji||'👤',text:t,color:selCol,at:Date.now(),seen:[]};
+      S.stories=S.stories.filter(s=>s.userId!==story.userId);// replace existing
+      S.stories.push(story);saveState();closeModal();renderStories();showToast('История опубликована!');
+    };body.appendChild(btn);
+  });
+}
+function openStory(s){
+  const uid=cu()?.id||'admin';
+  if(!s.seen.includes(uid))s.seen.push(uid);
+  saveState();
+  const sv=document.getElementById('storyView');
+  const card=document.getElementById('svCard');card.innerHTML='';
+  const av=ce('div');av.className='sv-av';av.textContent=s.emoji;card.appendChild(av);
+  const nm=ce('div');nm.className='sv-name';nm.textContent=s.userName;card.appendChild(nm);
+  const tx=ce('div');tx.className='sv-text';tx.textContent=s.text;card.appendChild(tx);
+  const ago=Math.round((Date.now()-s.at)/60000);
+  const tm=ce('div');tm.className='sv-time';tm.textContent=ago<60?(ago+'мин назад'):(Math.round(ago/60)+'ч назад');card.appendChild(tm);
+  card.style.background=s.color||'var(--s2)';card.style.color='#fff';
+  sv.style.display='flex';
+  const prog=document.getElementById('svProg');prog.style.width='0%';
+  setTimeout(()=>{prog.style.width='100%';},50);
+  storyTimer=setTimeout(closeStoryView,5200);
+  renderStories();
+}
+function closeStoryView(){if(storyTimer)clearTimeout(storyTimer);document.getElementById('storyView').style.display='none';}
+// ══ CHATS ══
+function toggleSearch(){
+  srchOpen=!srchOpen;
+  const w=document.getElementById('srchWrap');w.style.display=srchOpen?'block':'none';
+  if(srchOpen)document.getElementById('chatSearch').focus();
+  else{document.getElementById('chatSearch').value='';renderChats('');}
+}
+function renderChats(filter){
+  const u=cu();const cont=document.getElementById('chatsList');cont.innerHTML='';
+  if(!u)return;
+  const chats=visChats(u).filter(c=>{
+    if(!filter)return true;
+    return c.name.toLowerCase().includes(filter.toLowerCase());
+  });
+  const pinned=chats.filter(c=>c.pinned);
+  const byS={};
+  chats.filter(c=>!c.pinned).forEach(c=>{
+    let sec=c.type==='dm'?'Личные сообщения':c.type==='dm_admin'?'Служебные':c.grade?(c.grade+' класс'):'Другое';
+    if(!byS[sec])byS[sec]=[];byS[sec].push(c);
+  });
+  if(pinned.length){aSHdr(cont,'📌 Закреплённые');pinned.forEach((c,i)=>addCC(cont,c,i,u));}
+  const ORD=[11,10,9,8,7,6,5].map(x=>x+' класс').concat(['Личные сообщения','Служебные','Другое']);
+  Object.keys(byS).sort((a,b)=>(ORD.indexOf(a)+1||99)-(ORD.indexOf(b)+1||99)).forEach(sec=>{
+    aSHdr(cont,sec);byS[sec].forEach((c,i)=>addCC(cont,c,i+10,u));
+  });
+  // DMs button for staff
+  if(isStaff(u)||isAdmin(u)){
+    const dmBtn=ce('div');dmBtn.style.cssText='padding:12px 14px;text-align:center;cursor:pointer;font-size:13px;font-weight:700;color:var(--pri);border-top:1px solid var(--bor);background:var(--sur);';
+    dmBtn.textContent='💬 Личные сообщения';
+    dmBtn.onclick=()=>{openScreen('screen-dms');renderDMList();};
+    cont.appendChild(dmBtn);
+  }
+  if(!chats.length)addEmp(cont,'💬','Нет доступных чатов');
+  updateBadge();
+}
+function aSHdr(p,t){const el=ce('div');el.className='shdr';el.textContent=t;p.appendChild(el);}
+function addCC(cont,chat,delay,u){
+  const msgs=S.msg[chat.id]||[];const lm=msgs[msgs.length-1];
+  const card=ce('div');card.className='cc'+(chat.pinned?' pin':'');card.style.animationDelay=(delay*.04)+'s';
+  const av=ce('div');av.className='av '+(chat.col||'');av.textContent=chat.emoji;card.appendChild(av);
+  const ci=ce('div');ci.className='ci';
+  const cn=ce('div');cn.className='cn';
+  const nm=ce('span');nm.textContent=chat.name;cn.appendChild(nm);
+  if(chat.pinned){const pc=ce('span');pc.className='pchip';pc.textContent='канал';cn.appendChild(pc);}
+  if(chat.type==='parents'&&u.role==='student'){const rc=ce('span');rc.className='rochip';rc.textContent='только чтение';cn.appendChild(rc);}
+  ci.appendChild(cn);
+  const cl=ce('div');cl.className='cl';cl.textContent=lm?(lm.from+': '+lm.text):'Нет сообщений';ci.appendChild(cl);
+  card.appendChild(ci);
+  const cm=ce('div');cm.className='cm';
+  const ct=ce('div');ct.className='ct';ct.textContent=lm?lm.time:'';cm.appendChild(ct);
+  const mc=ce('div');mc.className='cmemb';mc.textContent='👥 '+(chat.type==='channel'?'1284':S.users.filter(x=>canSee(x,chat)).length+1);cm.appendChild(mc);
+  if(chat.unread>0){const ub=ce('span');ub.className='ubdg';ub.textContent=chat.unread;cm.appendChild(ub);}
+  card.appendChild(cm);
+  card.onclick=()=>openChat(chat.id);
+  cont.appendChild(card);
+}
+function addEmp(p,ic,t){const el=ce('div');el.className='emp';const i=ce('div');i.className='emp-ic';i.textContent=ic;const tx=ce('div');tx.className='emp-t';tx.textContent=t;el.appendChild(i);el.appendChild(tx);p.appendChild(el);}
+// ══ DM LIST (staff sees all users, can DM anyone) ══
+function renderDMList(){
+  const u=cu();const cont=document.getElementById('dmList');cont.innerHTML='';
+  if(!u)return;
+  // Show existing DM chats
+  const dmChats=S.chats.filter(c=>c.type==='dm'&&(c.members||[]).includes(u.id));
+  if(dmChats.length){
+    aSHdr(cont,'ДИАЛОГИ');
+    dmChats.forEach(c=>{
+      const otherId=c.members.find(id=>id!==u.id);
+      const other=S.users.find(x=>x.id===otherId);
+      const msgs=S.msg[c.id]||[];const lm=msgs[msgs.length-1];
+      const card=ce('div');card.className='cc';
+      const av=ce('div');av.className='av blu';av.textContent=other?other.emoji:'👤';card.appendChild(av);
+      const ci=ce('div');ci.className='ci';
+      const cn=ce('div');cn.className='cn';const nm=ce('span');nm.textContent=other?(other.name+' '+other.surname):c.name;cn.appendChild(nm);ci.appendChild(cn);
+      const cl=ce('div');cl.className='cl';cl.textContent=lm?(lm.from+': '+lm.text):'Нет сообщений';ci.appendChild(cl);card.appendChild(ci);
+      const cm=ce('div');cm.className='cm';const ct=ce('div');ct.className='ct';ct.textContent=lm?lm.time:'';cm.appendChild(ct);card.appendChild(cm);
+      card.onclick=()=>openChat(c.id);cont.appendChild(card);
+    });
+  }
+  // All users list
+  aSHdr(cont,'НАПИСАТЬ ПОЛЬЗОВАТЕЛЮ');
+  const others=S.users.filter(x=>x.id!==u.id);
+  if(!others.length){addEmp(cont,'👥','Других пользователей пока нет');return;}
+  others.forEach(other=>{
+    const card=ce('div');card.className='cc';
+    const av=ce('div');av.className='av blu';av.textContent=other.emoji||'👤';card.appendChild(av);
+    const ci=ce('div');ci.className='ci';
+    const cn=ce('div');cn.className='cn';const nm=ce('span');nm.textContent=other.name+' '+other.surname;cn.appendChild(nm);ci.appendChild(cn);
+    const cl=ce('div');cl.className='cl';cl.textContent=RLBL[other.role]+(other.grades?other.grades.filter(g=>g.grade).map(g=>g.grade+g.letter).join(', '):'');
+    ci.appendChild(cl);card.appendChild(ci);
+    const cm=ce('div');cm.className='cm';
+    const ib=ce('button');ib.style.cssText='background:var(--pri);color:#fff;border:none;border-radius:10px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;';ib.textContent='Написать';
+    ib.onclick=()=>openDMWith(other);cm.appendChild(ib);card.appendChild(cm);
+    cont.appendChild(card);
+  });
+}
+function openDMWith(other){
+  const u=cu();if(!u)return;
+  // Find or create DM chat
+  let dmChat=S.chats.find(c=>c.type==='dm'&&(c.members||[]).includes(u.id)&&(c.members||[]).includes(other.id));
+  if(!dmChat){
+    dmChat={id:'dm_'+Date.now(),name:other.name+' '+other.surname,type:'dm',grade:null,letter:null,emoji:other.emoji||'👤',col:'blu',desc:'Личный чат',pinned:false,pinnedMsg:'',unread:0,members:[u.id,other.id]};
+    S.chats.push(dmChat);S.msg[dmChat.id]=[];saveState();
+  }
+  openChat(dmChat.id);
+}
+// ══ CHAT VIEW ══
+function openChat(cid){
+  const u=cu();const chat=S.chats.find(c=>c.id===cid);
+  if(!chat||!u||!canSee(u,chat))return;
+  currentChatId=cid;chat.unread=0;saveState();
+  const av=document.getElementById('cvAv');av.textContent=chat.emoji;av.className='av sm '+(chat.col||'');
+  document.getElementById('cvTtl').textContent=chat.type==='dm'?(S.users.find(x=>x.id!==(u.id)&&(chat.members||[]).includes(x.id))?.name+' '+S.users.find(x=>x.id!==(u.id)&&(chat.members||[]).includes(x.id))?.surname||chat.name):chat.name;
+  const mc=chat.type==='channel'?'1284+':chat.type==='dm'?'2 участника':(S.users.filter(x=>canSee(x,chat)).length+1)+' участников';
+  document.getElementById('cvSub').textContent=mc;
+  const pb=document.getElementById('pbar');const pbt=document.getElementById('pbarT');
+  if(chat.pinnedMsg){pbt.textContent=chat.pinnedMsg;pb.style.display='flex';}else pb.style.display='none';
+  replyMsg=null;document.getElementById('rbar').style.display='none';
+  // Input visibility
+  const ciw=document.getElementById('ciw'),cro=document.getElementById('cro'),cpb=document.getElementById('cpb');
+  ciw.style.display='none';cro.style.display='none';cpb.style.display='none';
+  if(chat.type==='channel'){
+    if(canPost(u,chat))cpb.style.display='block';else cro.style.display='block';
+  }else if(canPost(u,chat))ciw.style.display='flex';
+  else cro.style.display='block';
+  renderMsgs(cid);openScreen('screen-chat');
+  setTimeout(()=>{const a=document.getElementById('msgsArea');a.scrollTop=a.scrollHeight;},80);
+  updateBadge();
+}
+function closeChat(){currentChatId=null;replyMsg=null;switchTab('chats');}
+function renderMsgs(cid){
+  const area=document.getElementById('msgsArea');area.innerHTML='';
+  const u=cu();const msgs=S.msg[cid]||[];
+  const sep=ce('div');sep.className='dsep';const sp=ce('span');sp.textContent='Сегодня';sep.appendChild(sp);area.appendChild(sep);
+  msgs.forEach(m=>area.appendChild(buildMsg(m,cid,u)));
+}
+function buildMsg(msg,cid,u){
+  const isMe=msg.fromId===u.id||(isAdmin(u)&&msg.fromId==='sys');
+  const chat=S.chats.find(c=>c.id===cid);
+  const isCh=chat&&chat.type==='channel';
+  const wrap=ce('div');wrap.className='mw '+(isMe?'me':'ot');wrap.dataset.id=msg.id;
+  if(!isMe){const sn=ce('div');sn.className='msender';sn.textContent=msg.from;wrap.appendChild(sn);}
+  if(msg.replyTo){const rs=ce('div');rs.className='rsnip';const rn=ce('div');rn.className='rsnip-n';rn.textContent=msg.replyTo.from;const rt=ce('div');rt.className='rsnip-t';rt.textContent=(msg.replyTo.text||'').slice(0,60);rs.appendChild(rn);rs.appendChild(rt);wrap.appendChild(rs);}
+  if(msg.fwd){const fw=ce('div');fw.className='fwdsnip';fw.textContent='↗ Переслано от '+msg.fwd;wrap.appendChild(fw);}
+  const bub=ce('div');bub.className='mb '+(isMe?'me':'ot');
+  const tx=ce('span');tx.textContent=msg.text;bub.appendChild(tx);
+  if(isMe){const ti=ce('span');ti.className='tme';ti.textContent=' '+msg.time;bub.appendChild(ti);if(msg.read){const rc=ce('span');rc.className='rchk';rc.textContent='✓✓';bub.appendChild(rc);}}
+  let ltimer;
+  bub.addEventListener('touchstart',e=>{ltimer=setTimeout(()=>openCtx(e.touches[0],msg,cid),550);},{passive:true});
+  bub.addEventListener('touchend',()=>clearTimeout(ltimer));
+  bub.addEventListener('touchmove',()=>clearTimeout(ltimer));
+  bub.addEventListener('contextmenu',e=>{e.preventDefault();openCtx(e,msg,cid);});
+  wrap.appendChild(bub);
+  if(!isMe){const ti=ce('div');ti.className='tot';ti.textContent=msg.time;wrap.appendChild(ti);}
+  if(msg.r&&msg.r.length){
+    const rw=ce('div');rw.className='reacts';
+    msg.r.forEach(r=>{
+      const rb=ce('button');rb.className='rbtn'+((r.v&&r.v.includes(u.id))?' on':'');
+      const em=ce('span');em.textContent=r.e;const cnt=ce('span');cnt.className='rcnt';cnt.textContent=r.n;
+      rb.appendChild(em);rb.appendChild(cnt);rb.onclick=()=>toggleR(cid,msg.id,r.e);rw.appendChild(rb);
+    });wrap.appendChild(rw);
+  }
+  if(isCh&&msg.comments!==undefined){
+    const cw=ce('div');cw.className='cmts';
+    const tog=ce('div');tog.className='cmttog';
+    const drawCmts=()=>{
+      cw.innerHTML='';cw.appendChild(tog);
+      const cl=msg.comments||[];
+      tog.textContent=(cl.length?'💬 '+cl.length+' комм.':'💬 Комментировать')+(tog.dataset.o==='1'?' ▲':' ▼');
+      if(tog.dataset.o==='1'){
+        cl.forEach(c=>{
+          const ci=ce('div');ci.className='cmt';
+          const cav=ce('div');cav.style.cssText='width:28px;height:28px;border-radius:9px;font-size:14px;background:linear-gradient(135deg,var(--pri),#7B6EF6);display:flex;align-items:center;justify-content:center;flex-shrink:0;';cav.textContent=c.av||'👤';
+          const cb=ce('div');cb.className='cmt-bub';
+          const cn=ce('div');cn.className='cmt-n';cn.textContent=c.from;
+          const ct=ce('div');ct.className='cmt-t';ct.textContent=c.text;
+          const ctm=ce('div');ctm.className='cmt-tm';ctm.textContent=c.time;
+          cb.appendChild(cn);cb.appendChild(ct);cb.appendChild(ctm);ci.appendChild(cav);ci.appendChild(cb);cw.appendChild(ci);
+        });
+        const ir=ce('div');ir.className='cmt-ir';
+        const cin=ce('input');cin.className='cmt-in';cin.placeholder='Комментарий…';cin.type='text';
+        const csnd=ce('button');csnd.className='cmt-snd';csnd.textContent='➤';
+        const doC=()=>{const t=cin.value.trim();if(!t)return;if(!msg.comments)msg.comments=[];const now=ntime();msg.comments.push({id:'c'+Date.now(),fromId:u.id,from:u.name+' '+u.surname,av:u.emoji,text:t,time:now});cin.value='';saveState();drawCmts();};
+        csnd.onclick=doC;cin.onkeydown=e=>{if(e.key==='Enter')doC();};
+        ir.appendChild(cin);ir.appendChild(csnd);cw.appendChild(ir);
+      }
+    };
+    tog.onclick=()=>{tog.dataset.o=tog.dataset.o==='1'?'0':'1';drawCmts();};tog.dataset.o='0';drawCmts();
+    wrap.appendChild(cw);
+  }
+  return wrap;
+}
+function toggleR(cid,mid,e){
+  const u=cu();const msgs=S.msg[cid];if(!msgs)return;
+  const msg=msgs.find(m=>m.id===mid);if(!msg)return;
+  if(!msg.r)msg.r=[];let r=msg.r.find(x=>x.e===e);
+  if(!r){r={e,n:0,v:[]};msg.r.push(r);}
+  if(!r.v)r.v=[];
+  const uid=u.id||'admin';
+  if(r.v.includes(uid)){r.v=r.v.filter(x=>x!==uid);r.n=Math.max(0,r.n-1);}
+  else{r.v.push(uid);r.n++;}
+  saveState();renderMsgs(cid);setTimeout(()=>{const a=document.getElementById('msgsArea');a.scrollTop=a.scrollHeight;},20);
+}
+function sendMsg(){
+  const u=cu();if(!u||!currentChatId)return;
+  const chat=S.chats.find(c=>c.id===currentChatId);if(!chat)return;
+  if(!canPost(u,chat)){showToast('Нет прав для отправки');return;}
+  const inp=document.getElementById('msgInp');const text=inp.value.trim();if(!text)return;
+  const now=ntime();
+  const m={id:'m_'+Date.now(),fromId:u.id||'admin',from:isAdmin(u)?'Администратор':(u.name+' '+u.surname),text,time:now,date:today(),r:[],pinned:false};
+  if(replyMsg){m.replyTo={from:replyMsg.from,text:replyMsg.text};cancelReply();}
+  if(!S.msg[currentChatId])S.msg[currentChatId]=[];
+  S.msg[currentChatId].push(m);
+  const co=S.chats.find(c=>c.id===currentChatId);if(co){co.lastMsg=text;co.lastTime=now;}
+  saveState();inp.value='';inp.style.height='auto';renderMsgs(currentChatId);
+  setTimeout(()=>{const a=document.getElementById('msgsArea');a.scrollTop=a.scrollHeight;},30);
+}
+function msgKd(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
+function cancelReply(){replyMsg=null;document.getElementById('rbar').style.display='none';}
+function ntime(){const n=new Date();return n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');}
+function today(){const n=new Date();return n.getDate().toString().padStart(2,'0')+'.'+(n.getMonth()+1).toString().padStart(2,'0');}
+// Context Menu
+function openCtx(e,msg,cid){
+  const u=cu();const menu=document.getElementById('ctx');menu.innerHTML='';
+  const items=[
+    {ic:'↩️',lb:'Ответить',fn:()=>{replyMsg=msg;document.getElementById('rbarT').textContent=msg.from+': '+msg.text;document.getElementById('rbar').style.display='flex';document.getElementById('msgInp').focus();closeCtx();}},
+    {ic:'📋',lb:'Копировать',fn:()=>{try{navigator.clipboard.writeText(msg.text);}catch(_){}showToast('Скопировано');closeCtx();}},
+    {ic:'↗️',lb:'Переслать',fn:()=>{openFwd(msg);closeCtx();}},
+    {ic:'😊',lb:'Реакция',fn:()=>{openReactPicker(cid,msg.id);closeCtx();}},
+  ];
+  if(isStaff(u)||isAdmin(u))items.push({ic:'📌',lb:'Закрепить',fn:()=>{const ch=S.chats.find(c=>c.id===cid);if(ch){ch.pinnedMsg=msg.text;saveState();document.getElementById('pbarT').textContent=msg.text;document.getElementById('pbar').style.display='flex';}closeCtx();showToast('Закреплено');}});
+  if(msg.fromId===u.id||isAdmin(u))items.push({ic:'🗑️',lb:'Удалить',dng:true,fn:()=>{if(S.msg[cid])S.msg[cid]=S.msg[cid].filter(m=>m.id!==msg.id);saveState();renderMsgs(cid);closeCtx();showToast('Удалено');}});
+  items.forEach(item=>{
+    const el=ce('div');el.className='cxi'+(item.dng?' dng':'');
+    const ic=ce('span');ic.textContent=item.ic;const lb=ce('span');lb.textContent=item.lb;
+    el.appendChild(ic);el.appendChild(lb);el.onclick=item.fn;menu.appendChild(el);
+  });
+  const x=Math.min((e.clientX||50),window.innerWidth-200);
+  const y=Math.min((e.clientY||100),window.innerHeight-items.length*44-10);
+  menu.style.left=x+'px';menu.style.top=y+'px';menu.classList.add('op');
+  document.getElementById('ov').classList.add('op');
+}
+function closeCtx(){document.getElementById('ctx').classList.remove('op');}
+function openReactPicker(cid,mid){
+  showModal('Реакция',body=>{
+    const emojis=['👍','❤️','🔥','🎉','😂','😮','😢','👏','🙌','💯','🤩','😬','🙏','✅','❌'];
+    const grid=ce('div');grid.style.cssText='display:flex;flex-wrap:wrap;gap:10px;';
+    emojis.forEach(e=>{
+      const b=ce('button');b.style.cssText='font-size:28px;cursor:pointer;border:none;background:none;padding:4px;border-radius:8px;transition:transform .1s;';b.textContent=e;
+      b.onclick=()=>{toggleR(cid,mid,e);closeModal();};grid.appendChild(b);
+    });body.appendChild(grid);
+  });
+}
+function openFwd(msg){
+  const u=cu();const chats=visChats(u).filter(c=>canPost(u,c)&&c.type!=='channel');
+  showModal('Переслать сообщение',body=>{
+    if(!chats.length){const t=ce('div');t.style.cssText='color:var(--t3);text-align:center;padding:20px;';t.textContent='Нет чатов для пересылки';body.appendChild(t);return;}
+    chats.forEach(c=>{
+      const item=ce('div');item.style.cssText='display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--bor);cursor:pointer;';
+      const av=ce('div');av.className='av sm '+(c.col||'');av.textContent=c.emoji;
+      const nm=ce('div');nm.style.cssText='font-size:14px;font-weight:700;';nm.textContent=c.type==='dm'?(S.users.find(x=>x.id!==(u.id)&&(c.members||[]).includes(x.id))?.name||c.name):c.name;
+      item.appendChild(av);item.appendChild(nm);
+      item.onclick=()=>{
+        const now=ntime();const m={id:'m_'+Date.now(),fromId:u.id||'admin',from:isAdmin(u)?'Администратор':(u.name+' '+u.surname),text:msg.text,fwd:msg.from,time:now,date:today(),r:[],pinned:false};
+        if(!S.msg[c.id])S.msg[c.id]=[];S.msg[c.id].push(m);saveState();closeModal();showToast('Переслано в «'+(c.name)+'»');
+        if(currentChatId===c.id)renderMsgs(c.id);
+      };body.appendChild(item);
+    });
+  });
+}
+function showChatInfo(){
+  const chat=S.chats.find(c=>c.id===currentChatId);if(!chat)return;
+  showModal(chat.name,body=>{
+    const d=ce('div');d.style.cssText='font-size:14px;color:var(--t2);margin-bottom:14px;line-height:1.5;';d.textContent=chat.desc||'';body.appendChild(d);
+    const types={channel:'📢 Официальный канал',students:'📚 Чат учеников',parents:'👨‍👩‍👧 Чат родителей',dm_admin:'🛡️ Чат с администратором',dm:'💬 Личное сообщение',group:'👥 Группа'};
+    const t=ce('div');t.style.cssText='font-size:13px;color:var(--t3);font-weight:700;margin-bottom:10px;';t.textContent=types[chat.type]||chat.type;body.appendChild(t);
+    if(chat.grade){const g=ce('div');g.style.cssText='font-size:13px;color:var(--t3);';g.textContent='Класс: '+chat.grade+chat.letter;body.appendChild(g);}
+  });
+}
+// Create post in channel
+function openCreatePostModal(cid){
+  const u=cu();if(!u)return;
+  showModal('Новый пост',body=>{
+    // If from news feed (cid=null), target ch_news
+    const targetCid=cid||'ch_news';
+    const ta=ce('textarea');ta.className='fta';ta.placeholder='Текст публикации…';ta.style.minHeight='120px';body.appendChild(ta);
+    const btn=ce('button');btn.className='btn';btn.textContent='Опубликовать';
+    btn.onclick=()=>{
+      const text=ta.value.trim();if(!text){showToast('Введите текст');return;}
+      const authorName=isAdmin(u)?'Администратор':u.role==='director'?('Директор '+u.surname+' '+u.name[0]+'.'):u.name+' '+u.surname[0]+'.';
+      const post={id:'m_'+Date.now(),fromId:u.id||'admin',from:authorName,text,time:ntime(),date:today(),r:[{e:'👍',n:0,v:[]},{e:'❤️',n:0,v:[]},{e:'🎉',n:0,v:[]}],pinned:false,comments:[]};
+      if(!S.msg[targetCid])S.msg[targetCid]=[];S.msg[targetCid].push(post);
+      saveState();closeModal();showToast('Пост опубликован!');
+      renderNews();if(currentChatId===targetCid)renderMsgs(targetCid);
+    };body.appendChild(btn);
+  });
+}
+// ══ NEWS ══
+function renderNews(){
+  const u=cu();const feed=document.getElementById('newsFeed');feed.innerHTML='';
+  if(!u)return;
+  const msgs=S.msg['ch_news']||[];
+  if(!msgs.length){addEmp(feed,'📰','Новостей пока нет');return;}
+  // Post button at top
+  if(isStaff(u)||isAdmin(u)){
+    const pb=ce('div');pb.style.cssText='padding:10px 14px;';
+    const pbtn=ce('button');pbtn.className='btn';pbtn.textContent='✏️ Написать пост в новости';pbtn.onclick=()=>openCreatePostModal(null);
+    pb.appendChild(pbtn);feed.appendChild(pb);
+  }
+  msgs.slice().reverse().forEach((msg,i)=>{
+    const card=ce('div');card.className='npost';card.style.animationDelay=(i*.06)+'s';
+    const tag=ce('div');tag.className='ntag';tag.textContent=msg.from||'Администрация';card.appendChild(tag);
+    const bod=ce('div');bod.className='nbod';bod.textContent=msg.text;card.appendChild(bod);
+    const meta=ce('div');meta.className='nmeta';
+    const au=ce('span');au.className='nauth';au.textContent=msg.from;const dt=ce('span');dt.className='ndate';dt.textContent=msg.date+' · '+msg.time;
+    meta.appendChild(au);meta.appendChild(dt);card.appendChild(meta);
+    // Reactions
+    if(msg.r&&msg.r.length){
+      const acts=ce('div');acts.className='nacts';
+      msg.r.forEach(r=>{
+        const rb=ce('button');rb.className='nrb'+((r.v&&r.v.includes(u.id||'admin'))?' on':'');
+        const em=ce('span');em.textContent=r.e;const cnt=ce('span');cnt.textContent=r.n||0;
+        rb.appendChild(em);rb.appendChild(cnt);rb.onclick=()=>{toggleR('ch_news',msg.id,r.e);renderNews();};acts.appendChild(rb);
+      });card.appendChild(acts);
+    }
+    // Comments
+    const cw=ce('div');cw.className='cmts';
+    const tog=ce('div');tog.className='cmttog';
+    const drawC=()=>{
+      cw.innerHTML='';cw.appendChild(tog);
+      const cl=msg.comments||[];
+      tog.textContent=(cl.length?'💬 '+cl.length+' комм.':'💬 Комментировать')+(tog.dataset.o==='1'?' ▲':' ▼');
+      if(tog.dataset.o==='1'){
+        cl.forEach(c=>{
+          const ci=ce('div');ci.className='cmt';
+          const cav=ce('div');cav.style.cssText='width:28px;height:28px;border-radius:9px;font-size:14px;background:linear-gradient(135deg,var(--pri),#7B6EF6);display:flex;align-items:center;justify-content:center;flex-shrink:0;';cav.textContent=c.av||'👤';
+          const cb=ce('div');cb.className='cmt-bub';const cn=ce('div');cn.className='cmt-n';cn.textContent=c.from;const ct2=ce('div');ct2.className='cmt-t';ct2.textContent=c.text;const ctm=ce('div');ctm.className='cmt-tm';ctm.textContent=c.time;
+          cb.appendChild(cn);cb.appendChild(ct2);cb.appendChild(ctm);ci.appendChild(cav);ci.appendChild(cb);cw.appendChild(ci);
+        });
+        const ir=ce('div');ir.className='cmt-ir';
+        const cin=ce('input');cin.className='cmt-in';cin.placeholder='Комментарий…';cin.type='text';
+        const csnd=ce('button');csnd.className='cmt-snd';csnd.textContent='➤';
+        const doC=()=>{const t=cin.value.trim();if(!t)return;if(!msg.comments)msg.comments=[];msg.comments.push({id:'c'+Date.now(),fromId:u.id||'admin',from:isAdmin(u)?'Администратор':(u.name+' '+u.surname),av:u.emoji||'👤',text:t,time:ntime()});cin.value='';saveState();drawC();};
+        csnd.onclick=doC;cin.onkeydown=e=>{if(e.key==='Enter')doC();};ir.appendChild(cin);ir.appendChild(csnd);cw.appendChild(ir);
+      }
+    };
+    tog.onclick=()=>{tog.dataset.o=tog.dataset.o==='1'?'0':'1';drawC();};tog.dataset.o='0';drawC();card.appendChild(cw);
+    // Open in channel link
+    const link=ce('div');link.style.cssText='font-size:12px;color:var(--pri);cursor:pointer;margin-top:6px;font-weight:700;';link.textContent='Открыть в канале →';link.onclick=()=>openChat('ch_news');card.appendChild(link);
+    feed.appendChild(card);
+  });
+}
+// ══ HW ══
+function renderHW(){
+  const u=cu();const list=document.getElementById('hwList');list.innerHTML='';
+  if(!u)return;
+  let items=S.hw;
+  if(u.role==='student'||u.role==='parent'){
+    const gs=uGrades(u);items=items.filter(h=>gs.some(g=>g.grade===h.grade&&g.letter===h.letter));
+  }
+  if(!items.length){addEmp(list,'📚','Нет заданий'+(u.role==='student'?' для вашего класса':''));return;}
+  const now2=new Date();now2.setHours(0,0,0,0);
+  items=items.slice().sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate));
+  let prevSec='';
+  items.forEach((hw,i)=>{
+    const due=new Date(hw.dueDate);due.setHours(0,0,0,0);
+    const dl=Math.round((due-now2)/(864e5));
+    const sec=dl<0?'🔴 Просроченные':dl===0?'🟡 Сдать сегодня':dl===1?'🟡 Сдать завтра':'🟢 Предстоящие';
+    if(sec!==prevSec){aSHdr(list,sec);prevSec=sec;}
+    const card=ce('div');card.className='hwc';card.style.animationDelay=(i*.05)+'s';
+    const icon=ce('div');icon.className='hwi';icon.textContent=Semoji[hw.subject]||'📝';card.appendChild(icon);
+    const inf=ce('div');inf.className='hwinf';
+    const sub=ce('div');sub.className='hwsub';sub.textContent=hw.subject;
+    const cls=ce('div');cls.className='hwcls';cls.textContent=hw.grade+hw.letter;
+    const tsk=ce('div');tsk.className='hwtsk';tsk.textContent=hw.text;
+    const met=ce('div');met.className='hwmet';
+    const due2=ce('div');due2.className='hwdue '+(dl<=1?'sn':'ok');due2.textContent=dl<0?'⚠️ Просрочено':dl===0?'📅 Сегодня':dl===1?'📅 Завтра':'📅 '+hw.dueDate.split('-').reverse().join('.');
+    const te=ce('div');te.className='hwte';te.textContent=hw.teacher;
+    met.appendChild(due2);met.appendChild(te);
+    inf.appendChild(sub);if(isStaff(u)||isAdmin(u))inf.appendChild(cls);inf.appendChild(tsk);inf.appendChild(met);card.appendChild(inf);
+    if(u.role==='student'){
+      const chk=ce('div');chk.className='hwchk'+((S.hwDone[u.id]||{})[hw.id]?' dn':'');chk.textContent=(S.hwDone[u.id]||{})[hw.id]?'✓':'';
+      chk.onclick=e=>{e.stopPropagation();if(!S.hwDone[u.id])S.hwDone[u.id]={};S.hwDone[u.id][hw.id]=!S.hwDone[u.id][hw.id];saveState();renderHW();showToast(S.hwDone[u.id][hw.id]?'Выполнено ✓':'Снято');};
+      card.appendChild(chk);
+      const fb=ce('button');fb.style.cssText='background:none;border:none;font-size:18px;cursor:pointer;padding:0 4px;';fb.textContent='↗️';
+      fb.onclick=e=>{e.stopPropagation();openFwd({from:'ДЗ',text:hw.subject+': '+hw.text});};card.appendChild(fb);
+    }
+    if(isStaff(u)||isAdmin(u)){
+      const db=ce('button');db.style.cssText='background:none;border:none;font-size:18px;cursor:pointer;padding:0 4px;';db.textContent='🗑️';
+      db.onclick=e=>{e.stopPropagation();S.hw=S.hw.filter(h=>h.id!==hw.id);saveState();renderHW();showToast('Задание удалено');};
+      card.appendChild(db);
+    }
+    list.appendChild(card);
+  });
+}
+// HW CREATE
+function renderHWCreate(){
+  const u=cu();if(!isStaff(u)&&!isAdmin(u)){switchTab('hw');return;}
+  const body=document.getElementById('hwcBody');body.innerHTML='';
+  let ss='',sg=null,sl=null,sd='';
+  aLbl(body,'Предмет');
+  const sr=ce('div');sr.className='sel-row';
+  SUBJ.forEach(s=>{const c=ce('button');c.className='chip';c.textContent=s;c.onclick=()=>{sr.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');ss=s;};sr.appendChild(c);});body.appendChild(sr);
+  aLbl(body,'Класс');
+  const gr=ce('div');gr.className='sel-row';
+  GRADES.forEach(g=>{const c=ce('button');c.className='chip';c.textContent=g;c.onclick=()=>{gr.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');sg=String(g);};gr.appendChild(c);});body.appendChild(gr);
+  aLbl(body,'Буква класса');
+  const lr=ce('div');lr.className='sel-row';
+  LETTERS.forEach(l=>{const c=ce('button');c.className='chip';c.textContent=l;c.onclick=()=>{lr.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');sl=l;};lr.appendChild(c);});body.appendChild(lr);
+  aLbl(body,'Срок сдачи');const di=aInp(body,'date','','');
+  aLbl(body,'Задание (текст)');const ta=ce('textarea');ta.className='fta';ta.placeholder='Опишите задание подробно…';ta.style.minHeight='100px';body.appendChild(ta);
+  const btn=ce('button');btn.className='btn';btn.textContent='Добавить задание ✓';
+  btn.onclick=()=>{
+    if(!ss){showToast('Выберите предмет');return;}
+    if(!sg){showToast('Выберите класс');return;}
+    if(!sl){showToast('Выберите букву');return;}
+    if(!di.value){showToast('Укажите срок сдачи');return;}
+    const text=ta.value.trim();if(!text){showToast('Введите текст задания');return;}
+    const tname=isAdmin(u)?'Администратор':(u.name+' '+u.surname[0]+'.');
+    S.hw.push({id:'hw_'+Date.now(),subject:ss,grade:sg,letter:sl,text,dueDate:di.value,teacher:tname,at:Date.now()});
+    saveState();showToast('Задание добавлено!');switchTab('hw');
+  };body.appendChild(btn);
+}
+// ══ PROFILE ══
+function renderProfile(){
+  const u=cu();const scr=document.getElementById('profScroll');scr.innerHTML='';
+  if(!u){const b=ce('button');b.className='btn';b.style.margin='20px';b.textContent='Войти';b.onclick=()=>openScreen('screen-auth');scr.appendChild(b);return;}
+  const hero=ce('div');hero.className='phero';
+  const av=ce('div');av.className='pav';av.textContent=u.emoji||'👤';av.onclick=()=>openEmojiPick();hero.appendChild(av);
+  const nm=ce('div');nm.className='pnm';nm.textContent=isAdmin(u)?'Администратор':(u.name+' '+u.surname);hero.appendChild(nm);
+  const gs=uGrades(u).filter(g=>g.grade);const cs=gs.map(g=>g.grade+g.letter).join(', ');
+  const rch=ce('div');rch.className='prchip';rch.textContent=RLBL[u.role]+(cs?' · '+cs:'');hero.appendChild(rch);
+  if(u.bio){const bi=ce('div');bi.className='pbio';bi.textContent=u.bio;hero.appendChild(bi);}
+  // Story of mine
+  const myStory=S.stories.find(s=>s.userId===u.id||(isAdmin(u)&&s.userId==='sys_admin'));
+  if(myStory){const st=ce('div');st.style.cssText='font-size:12px;color:rgba(255,255,255,.7);cursor:pointer;margin-top:4px;';st.textContent='📖 Моя история: «'+myStory.text.slice(0,40)+'…»';st.onclick=()=>openStory(myStory);hero.appendChild(st);}
+  scr.appendChild(hero);
+  // Info card
+  const c1=ce('div');c1.className='pcard';
+  if(!isAdmin(u)){
+    const fields=[['👤','Имя и фамилия',u.name+' '+u.surname],['🎓','Роль',RLBL[u.role]||(u.role)],cs?['🏫','Класс',cs]:null,u.dob&&u.role==='student'?['🎂','Дата рождения',u.dob]:null].filter(Boolean);
+    fields.forEach(([ic,lb,vl])=>{
+      const row=ce('div');row.className='prow';
+      const ric=ce('div');ric.className='pric';ric.textContent=ic;
+      const rinf=ce('div');rinf.className='prinf';
+      const rlb=ce('div');rlb.className='prlb';rlb.textContent=lb;
+      const rvl=ce('div');rvl.className='prvl';rvl.textContent=vl;
+      rinf.appendChild(rlb);rinf.appendChild(rvl);row.appendChild(ric);row.appendChild(rinf);c1.appendChild(row);
+    });
+  }
+  // Notifs
+  const nr=ce('div');nr.className='prow';
+  const nic=ce('div');nic.className='pric';nic.textContent='🔔';
+  const ninf=ce('div');ninf.className='prinf';
+  const nlb=ce('div');nlb.className='prlb';nlb.textContent='Уведомления';
+  const nvl=ce('div');nvl.className='prvl';nvl.textContent=S.notifs?'Включены':'Выключены';
+  ninf.appendChild(nlb);ninf.appendChild(nvl);
+  const tg=ce('button');tg.className='tog'+(S.notifs?' on':'');tg.onclick=()=>{S.notifs=!S.notifs;saveState();nvl.textContent=S.notifs?'Включены':'Выключены';tg.className='tog'+(S.notifs?' on':'');};
+  nr.appendChild(nic);nr.appendChild(ninf);nr.appendChild(tg);c1.appendChild(nr);
+  scr.appendChild(c1);
+  // Groups
+  const myCh=visChats(u).filter(c=>c.type!=='channel'&&c.type!=='dm_admin'&&c.type!=='dm');
+  if(myCh.length){
+    aSHdr(scr,'МОИ ГРУППЫ');const gc=ce('div');gc.className='pcard';
+    const gr=ce('div');gr.className='prow';gr.style.flexWrap='wrap';gr.style.gap='4px';
+    myCh.forEach(c=>{const t=ce('span');t.className='gtag';t.textContent=c.name;gr.appendChild(t);});gc.appendChild(gr);scr.appendChild(gc);
+  }
+  // DMs for staff
+  if(isStaff(u)||isAdmin(u)){
+    const dmc=ce('div');dmc.className='pcard';dmc.style.marginTop='10px';
+    const dmr=ce('div');dmr.className='prow cl';dmr.onclick=()=>{openScreen('screen-dms');renderDMList();};
+    const dmic=ce('div');dmic.className='pric';dmic.textContent='💬';
+    const dminf=ce('div');dminf.className='prinf';const dmlb=ce('div');dmlb.className='prlb';dmlb.textContent='Личные сообщения';dmlb.style.color='var(--pri)';dminf.appendChild(dmlb);
+    dmr.appendChild(dmic);dmr.appendChild(dminf);dmc.appendChild(dmr);scr.appendChild(dmc);
+  }
+  // Actions card
+  const ac=ce('div');ac.className='pcard';ac.style.marginTop='10px';
+  // Edit
+  const er=ce('div');er.className='prow cl';er.onclick=openEditProf;
+  const eic=ce('div');eic.className='pric';eic.textContent='✏️';const einf=ce('div');einf.className='prinf';const elb=ce('div');elb.className='prlb';elb.textContent='Редактировать профиль';einf.appendChild(elb);er.appendChild(eic);er.appendChild(einf);ac.appendChild(er);
+  // Story
+  const str=ce('div');str.className='prow cl';str.onclick=openAddStoryModal;
+  const stic=ce('div');stic.className='pric';stic.textContent='📖';const stinf=ce('div');stinf.className='prinf';const stlb=ce('div');stlb.className='prlb';stlb.textContent='Добавить историю';stinf.appendChild(stlb);str.appendChild(stic);str.appendChild(stinf);ac.appendChild(str);
+  // Admin panel
+  if(isAdmin(u)){const ar=ce('div');ar.className='prow cl';ar.onclick=()=>{renderAdmin();openScreen('screen-admin');};const aic=ce('div');aic.className='pric';aic.textContent='🛡️';const ainf=ce('div');ainf.className='prinf';const alb=ce('div');alb.className='prlb';alb.style.color='var(--pri)';alb.textContent='Панель администратора';ainf.appendChild(alb);ar.appendChild(aic);ar.appendChild(ainf);ac.appendChild(ar);}
+  // Logout
+  const lr=ce('div');lr.className='prow cl dng';lr.onclick=()=>{S.currentUserId=null;saveState();document.getElementById('bnav').style.display='none';openScreen('screen-auth');showToast('Вы вышли');};
+  const lic=ce('div');lic.className='pric';lic.textContent='🚪';const linf=ce('div');linf.className='prinf';const llb=ce('div');llb.className='prlb';llb.textContent='Выйти из аккаунта';linf.appendChild(llb);lr.appendChild(lic);lr.appendChild(linf);ac.appendChild(lr);
+  scr.appendChild(ac);
+  const sp=ce('div');sp.style.height='24px';scr.appendChild(sp);
+}
+function openEmojiPick(){
+  showModal('Выберите аватарку',body=>{
+    const grid=ce('div');grid.style.cssText='display:flex;flex-wrap:wrap;gap:8px;';
+    EMOJIS.forEach(em=>{
+      const b=ce('button');b.style.cssText='font-size:30px;cursor:pointer;border:2px solid transparent;border-radius:10px;padding:6px;background:var(--s2);transition:all .1s;';b.textContent=em;
+      b.onclick=()=>{const u2=cu();if(!u2||isAdmin(u2))return;u2.emoji=em;saveState();closeModal();renderProfile();renderStories();showToast('Аватарка обновлена');};
+      grid.appendChild(b);
+    });body.appendChild(grid);
+  });
+}
+function openEditProf(){
+  const u=cu();if(!u||isAdmin(u))return;
+  showModal('Редактировать профиль',body=>{
+    aLbl(body,'Имя');const ni=aInp(body,'text',u.name,'Имя');
+    aLbl(body,'Фамилия');const si=aInp(body,'text',u.surname,'Фамилия');
+    if(u.role==='student'){aLbl(body,'Дата рождения');const di=aInp(body,'text',u.dob||'','ДД.ММ.ГГГГ');aLbl(body,'О себе');const bi=ce('textarea');bi.className='fta';bi.value=u.bio||'';body.appendChild(bi);const btn=ce('button');btn.className='btn';btn.textContent='Сохранить';btn.onclick=()=>{u.name=ni.value.trim()||u.name;u.surname=si.value.trim()||u.surname;u.dob=di.value.trim();u.bio=bi.value.trim();saveState();closeModal();renderProfile();showToast('Сохранено!');};body.appendChild(btn);}
+    else{aLbl(body,'О себе');const bi=ce('textarea');bi.className='fta';bi.value=u.bio||'';body.appendChild(bi);const btn=ce('button');btn.className='btn';btn.textContent='Сохранить';btn.onclick=()=>{u.name=ni.value.trim()||u.name;u.surname=si.value.trim()||u.surname;u.bio=bi.value.trim();saveState();closeModal();renderProfile();showToast('Сохранено!');};body.appendChild(btn);}
+  });
+}
+// ══ CODE TAB ══
+function renderCodeTab(){
+  const u=cu();const body=document.getElementById('codeBody');body.innerHTML='';
+  if(!u||(rk(u)<3&&!isAdmin(u))){addEmp(body,'🔒','Нет доступа');return;}
+  const sec=ce('div');sec.style.padding='14px 16px';
+  aSHdr(sec,'СОЗДАТЬ КОД');
+  let sr='',sg=null,sl=null;
+  const maxRk=rk(u)||(isAdmin(u)?5:0);
+  const avRoles=Object.entries(RANK).filter(([r,rk2])=>rk2<maxRk&&r!=='admin').map(([r])=>r);
+  aLbl(sec,'Роль');const rr=ce('div');rr.className='sel-row';
+  avRoles.forEach(r=>{const c=ce('button');c.className='chip';c.textContent=RLBL[r];c.onclick=()=>{rr.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');sr=r;grDiv.style.display=(r==='student'||r==='parent')?'block':'none';dobInp.style.display=r==='student'?'block':'none';};rr.appendChild(c);});sec.appendChild(rr);
+  const grDiv=ce('div');grDiv.style.display='none';
+  aLbl(grDiv,'Класс');const gr=ce('div');gr.className='sel-row';GRADES.forEach(g=>{const c=ce('button');c.className='chip';c.textContent=g;c.onclick=()=>{gr.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');sg=String(g);};gr.appendChild(c);});grDiv.appendChild(gr);
+  aLbl(grDiv,'Буква');const lr=ce('div');lr.className='sel-row';LETTERS.forEach(l=>{const c=ce('button');c.className='chip';c.textContent=l;c.onclick=()=>{lr.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');sl=l;};lr.appendChild(c);});grDiv.appendChild(lr);
+  sec.appendChild(grDiv);
+  aLbl(sec,'Имя');const ni=aInp(sec,'text','','Имя');
+  aLbl(sec,'Фамилия');const si=aInp(sec,'text','','Фамилия');
+  const dobInp=aInp(sec,'text','','ДД.ММ.ГГГГ (дата рождения)');dobInp.style.display='none';
+  const resBox=ce('div');resBox.style.display='none';resBox.className='cres';
+  const resCode=ce('div');resCode.className='cres-c';const resInfo=ce('div');resInfo.className='cres-i';resBox.appendChild(resCode);resBox.appendChild(resInfo);sec.appendChild(resBox);
+  const btn=ce('button');btn.className='btn';btn.textContent='Сгенерировать код';
+  btn.onclick=()=>{
+    if(!sr){showToast('Выберите роль');return;}
+    if((sr==='student'||sr==='parent')&&(!sg||!sl)){showToast('Выберите класс и букву');return;}
+    const code=genCode();
+    S.codes.push({code,role:sr,grade:sg,letter:sl,name:ni.value.trim(),surname:si.value.trim(),dob:dobInp.value.trim(),used:false,usedBy:null,createdBy:u.id||'admin'});
+    saveState();resCode.textContent=code;resInfo.textContent=(ni.value.trim()||'')+(si.value.trim()?' '+si.value.trim():'')+' · '+RLBL[sr]+(sg?' · '+sg+sl:'');resBox.style.display='block';
+    const cpBtn=ce('button');cpBtn.className='btn2';cpBtn.textContent='📋 Скопировать: '+code;cpBtn.onclick=()=>{try{navigator.clipboard.writeText(code);}catch(_){}showToast('Скопировано: '+code);};resBox.appendChild(cpBtn);
+    showToast('Код '+code+' создан!');renderCodeList(body);
+  };sec.appendChild(btn);
+  body.appendChild(sec);
+  renderCodeList(body);
+}
+function renderCodeList(body){
+  const u=cu();const old=body.querySelector('#codeListSec');if(old)old.remove();
+  const sec=ce('div');sec.id='codeListSec';
+  aSHdr(sec,'КОДЫ');
+  const mine=isAdmin(u)?S.codes:S.codes.filter(c=>c.createdBy===u.id);
+  if(!mine.length){addEmp(sec,'🔑','Кодов ещё нет');body.appendChild(sec);return;}
+  mine.slice().reverse().forEach(c=>{
+    const item=ce('div');item.className='cli';
+    const cb=ce('div');cb.className='cbdg';cb.textContent=c.code;
+    const inf=ce('div');inf.className='cinf';
+    const rn=ce('div');rn.className='crn';rn.textContent=RLBL[c.role]+(c.grade?' · '+c.grade+(c.letter||''):'')+' '+(c.name||'')+(c.surname?' '+c.surname:'');
+    const mt=ce('div');mt.className='cmt2';mt.textContent=c.dob?'ДР: '+c.dob:'';
+    const us=ce('div');us.className='cus '+(c.used?'yes':'no');us.textContent=c.used?'✓ Использован':'● Активен';
+    inf.appendChild(rn);inf.appendChild(mt);item.appendChild(cb);item.appendChild(inf);item.appendChild(us);
+    const cp=ce('button');cp.style.cssText='background:none;border:none;font-size:18px;cursor:pointer;';cp.textContent='📋';cp.onclick=()=>{try{navigator.clipboard.writeText(c.code);}catch(_){}showToast('Скопировано: '+c.code);};item.appendChild(cp);
+    sec.appendChild(item);
+  });body.appendChild(sec);
+}
+function genCode(){const ch='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let code='';for(let i=0;i<8;i++)code+=ch[Math.floor(Math.random()*ch.length)];return S.codes.find(c=>c.code===code)?genCode():code;}
+// ══ CREATE GROUP ══
+function renderCreateGroup(){
+  const u=cu();if(!isStaff(u)&&!isAdmin(u)){switchTab('chats');return;}
+  const body=document.getElementById('cgBody');body.innerHTML='';
+  let st=null,sg=null,sl=null;
+  aLbl(body,'Тип группы');
+  const tr=ce('div');tr.className='sel-row';
+  [{v:'class',l:'Ученики + Родители'},{v:'students',l:'Только Ученики'},{v:'parents',l:'Только Родители'},{v:'group',l:'Произвольная группа'}].forEach(opt=>{
+    const c=ce('button');c.className='chip';c.textContent=opt.l;
+    c.onclick=()=>{tr.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');st=opt.v;grSec.style.display=opt.v!=='group'?'block':'none';gnWrap.style.display=opt.v==='group'?'block':'none';upPrev();};
+    tr.appendChild(c);
+  });body.appendChild(tr);
+  const grSec=ce('div');grSec.style.display='none';
+  aLbl(grSec,'Класс');const gr=ce('div');gr.className='sel-row';GRADES.forEach(g=>{const c=ce('button');c.className='chip';c.textContent=g;c.onclick=()=>{gr.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');sg=String(g);upPrev();};gr.appendChild(c);});grSec.appendChild(gr);
+  aLbl(grSec,'Буква');const lr=ce('div');lr.className='sel-row';LETTERS.forEach(l=>{const c=ce('button');c.className='chip';c.textContent=l;c.onclick=()=>{lr.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');sl=l;upPrev();};lr.appendChild(c);});grSec.appendChild(lr);
+  body.appendChild(grSec);
+  const gnWrap=ce('div');gnWrap.style.display='none';aLbl(gnWrap,'Название группы');const gni=aInp(gnWrap,'text','','Название…');gni.oninput=upPrev;body.appendChild(gnWrap);
+  const prev=ce('div');prev.style.cssText='background:var(--pli);border-radius:var(--rsm);padding:14px;margin:10px 0;';
+  const pn=ce('div');pn.style.cssText='font-size:15px;font-weight:800;color:var(--pri);';pn.textContent='Выберите параметры…';prev.appendChild(pn);body.appendChild(prev);
+  function upPrev(){if(st&&st!=='group'&&sg&&sl)pn.textContent=sg+sl+' · '+(st==='class'?'Ученики + Родители':st==='students'?'Ученики':'Родители');else if(st==='group')pn.textContent=gni.value||'Новая группа';}
+  const btn=ce('button');btn.className='btn';btn.textContent='Создать →';
+  btn.onclick=()=>{
+    if(!st){showToast('Выберите тип');return;}
+    if(st!=='group'&&(!sg||!sl)){showToast('Выберите класс и букву');return;}
+    const toMake=[];
+    if(st==='class'){
+      toMake.push({type:'students',name:sg+sl+' · Ученики',grade:sg,letter:sl,emoji:'📚',col:'grn'});
+      toMake.push({type:'parents',name:sg+sl+' · Родители',grade:sg,letter:sl,emoji:'👨‍👩‍👧',col:'ora'});
+    }else if(st==='group'){
+      const gn=gni.value.trim()||'Группа';toMake.push({type:'group',name:gn,grade:null,letter:null,emoji:'👥',col:'vio'});
+    }else{
+      toMake.push({type:st,name:sg+sl+' · '+(st==='students'?'Ученики':'Родители'),grade:sg,letter:sl,emoji:st==='students'?'📚':'👨‍👩‍👧',col:st==='students'?'grn':'ora'});
+    }
+    let done=0;
+    toMake.forEach(t=>{
+      const ex=S.chats.find(c=>c.type===t.type&&c.grade===t.grade&&c.letter===t.letter&&(t.type==='group'?c.name===t.name:true));
+      if(ex){showToast('«'+t.name+'» уже существует');return;}
+      const nc={id:'ch_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),name:t.name,type:t.type,grade:t.grade,letter:t.letter,emoji:t.emoji,col:t.col,desc:'',pinned:false,pinnedMsg:'',unread:0,members:[]};
+      S.chats.push(nc);S.msg[nc.id]=[];done++;
+    });
+    if(done>0){saveState();showToast('Создано: '+done+' чат(а)!');switchTab('chats');}
+  };body.appendChild(btn);
+}
+// ══ ADMIN ══
+function openAdminScreen(){renderAdmin();openScreen('screen-admin');}
+function renderAdmin(){
+  const u=cu();if(!isAdmin(u))return;
+  const body=document.getElementById('admBody');body.innerHTML='';
+  // Clear chat
+  const s1=ce('div');s1.className='adm-sec';const h1=ce('div');h1.className='adm-ttl';h1.textContent='🗑️ Очистить чат';s1.appendChild(h1);
+  const b1=ce('div');b1.className='pcard';
+  S.chats.forEach(chat=>{
+    const item=ce('div');item.className='adm-ui';
+    const nm=ce('div');const nmt=ce('div');nmt.className='adm-nm';nmt.textContent=chat.emoji+' '+chat.name;const nms=ce('div');nms.className='adm-me';nms.textContent=(S.msg[chat.id]||[]).length+' сообщений';nm.appendChild(nmt);nm.appendChild(nms);item.appendChild(nm);
+    const db=ce('button');db.className='btnd';db.textContent='Очистить';
+    db.onclick=()=>{if(confirm('Удалить ВСЕ сообщения в «'+chat.name+'»?')){S.msg[chat.id]=[];saveState();renderAdmin();showToast('Чат очищен');}};
+    item.appendChild(db);b1.appendChild(item);
+  });s1.appendChild(b1);body.appendChild(s1);
+  // Transfer student
+  const s2=ce('div');s2.className='adm-sec';s2.style.marginTop='14px';const h2=ce('div');h2.className='adm-ttl';h2.textContent='🔄 Перевести ученика';s2.appendChild(h2);
+  const students=S.users.filter(x=>x.role==='student');
+  if(!students.length){const e=ce('div');e.style.cssText='font-size:13px;color:var(--t3);padding:8px 0;';e.textContent='Нет учеников';s2.appendChild(e);}
+  else{const b2=ce('div');b2.className='pcard';students.forEach(st=>{const item=ce('div');item.className='adm-ui';const inf=ce('div');const nm=ce('div');nm.className='adm-nm';nm.textContent=st.emoji+' '+st.name+' '+st.surname;const mt=ce('div');mt.className='adm-me';const gs=uGrades(st).filter(g=>g.grade);mt.textContent='Класс: '+gs.map(g=>g.grade+g.letter).join(', ');inf.appendChild(nm);inf.appendChild(mt);item.appendChild(inf);const mvb=ce('button');mvb.className='btn';mvb.style.cssText='width:auto;padding:6px 12px;font-size:12px;margin-top:0;';mvb.textContent='Перевести';mvb.onclick=()=>openTransfer(st);item.appendChild(mvb);b2.appendChild(item);});s2.appendChild(b2);}
+  body.appendChild(s2);
+  // User list
+  const s3=ce('div');s3.className='adm-sec';s3.style.marginTop='14px';const h3=ce('div');h3.className='adm-ttl';h3.textContent='👥 Все пользователи';s3.appendChild(h3);
+  const b3=ce('div');b3.className='pcard';
+  if(!S.users.length){const e=ce('div');e.style.cssText='font-size:13px;color:var(--t3);padding:8px;';e.textContent='Нет зарегистрированных пользователей';b3.appendChild(e);}
+  S.users.forEach(usr=>{
+    const item=ce('div');item.className='adm-ui';
+    const inf=ce('div');const nm=ce('div');nm.className='adm-nm';nm.textContent=(usr.emoji||'👤')+' '+usr.name+' '+usr.surname;const mt=ce('div');mt.className='adm-me';const gs=uGrades(usr).filter(g=>g.grade);mt.textContent=RLBL[usr.role]+(gs.length?' · '+gs.map(g=>g.grade+g.letter).join(', '):'');inf.appendChild(nm);inf.appendChild(mt);item.appendChild(inf);
+    const dbl=ce('button');dbl.className='btnd';dbl.style.cssText='padding:5px 10px;font-size:12px;';dbl.textContent='🗑️';dbl.onclick=()=>{if(confirm('Удалить '+usr.name+'?')){S.users=S.users.filter(x=>x.id!==usr.id);saveState();renderAdmin();}};item.appendChild(dbl);
+    b3.appendChild(item);
+  });s3.appendChild(b3);body.appendChild(s3);
+  const sp=ce('div');sp.style.height='32px';body.appendChild(sp);
+}
+function openTransfer(student){
+  showModal('Перевести '+student.name+' '+student.surname,body=>{
+    let sg=null,sl=null;
+    aLbl(body,'Новый класс');const gr=ce('div');gr.className='sel-row';GRADES.forEach(g=>{const c=ce('button');c.className='chip';c.textContent=g;c.onclick=()=>{gr.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');sg=String(g);};gr.appendChild(c);});body.appendChild(gr);
+    aLbl(body,'Буква');const lr=ce('div');lr.className='sel-row';LETTERS.forEach(l=>{const c=ce('button');c.className='chip';c.textContent=l;c.onclick=()=>{lr.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');sl=l;};lr.appendChild(c);});body.appendChild(lr);
+    const btn=ce('button');btn.className='btn';btn.textContent='Перевести';
+    btn.onclick=()=>{
+      if(!sg||!sl){showToast('Выберите класс и букву');return;}
+      student.grades=[{grade:sg,letter:sl}];
+      // Update parents by surname match
+      const base=student.surname.replace(/[аяийь]$/i,'').toLowerCase();
+      S.users.filter(x=>x.role==='parent').forEach(par=>{
+        const pb=par.surname.replace(/[аяийь]$/i,'').toLowerCase();
+        if(pb===base){const pgs=(par.grades||[{grade:par.grade,letter:par.letter}]).filter(g=>g.grade!==student.grades[0].grade||g.letter!==student.grades[0].letter);pgs.push({grade:sg,letter:sl});par.grades=[...new Map(pgs.map(g=>[g.grade+g.letter,g])).values()];}
+      });
+      saveState();closeModal();renderAdmin();showToast(student.name+' переведён в '+sg+sl);
+    };body.appendChild(btn);
+  });
+}
+// ══ MODAL ══
+function showModal(title,fn){
+  const mbd=document.getElementById('mbd'),modal=document.getElementById('modal'),mc=document.getElementById('mcon');
+  mc.innerHTML='';
+  const han=ce('div');han.className='mhan';mc.appendChild(han);
+  const ttl=ce('div');ttl.className='mttl';ttl.textContent=title;mc.appendChild(ttl);
+  const bod=ce('div');bod.className='mbod';fn(bod);mc.appendChild(bod);
+  mbd.classList.add('op');modal.classList.add('op');
+}
+function closeModal(){document.getElementById('mbd').classList.remove('op');document.getElementById('modal').classList.remove('op');}
+// ══ ATTACH ══
+function renderAttach(){
+  const grid=document.getElementById('agrid');grid.innerHTML='';
+  AOPT.forEach(opt=>{
+    const item=ce('div');item.className='aopt';
+    const ic=ce('div');ic.className='aopt-ic';ic.style.background=opt.b;ic.textContent=opt.i;
+    const lb=ce('div');lb.className='aopt-lb';lb.textContent=opt.l;
+    item.appendChild(ic);item.appendChild(lb);item.onclick=()=>{closeOverlays();showToast(opt.l+': скоро будет доступно');};
+    grid.appendChild(item);
+  });
+}
+function toggleAttach(){const ash=document.getElementById('ash');const ov=document.getElementById('ov');if(ash.classList.contains('op')){ash.classList.remove('op');ov.classList.remove('op');}else{ash.classList.add('op');ov.classList.add('op');}}
+// ══ UTILS ══
+function closeOverlays(){document.getElementById('ov').classList.remove('op');document.getElementById('ash').classList.remove('op');document.getElementById('ctx').classList.remove('op');}
+let toastT;
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('sh');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('sh'),2600);}
+function updateBadge(){const tot=S.chats.reduce((s,c)=>s+(c.unread||0),0);const b=document.getElementById('ubdg');b.style.display=tot>0?'block':'none';b.textContent=tot>99?'99+':tot;}
+function renderDemoCodes(){const c=document.getElementById('demoCodes');c.innerHTML='';DEMO.forEach(d=>{const row=ce('div');row.className='demo-row';const code=ce('span');code.className='demo-code';code.textContent=d.code;const role=ce('span');role.className='demo-role';role.textContent=d.desc;row.appendChild(code);row.appendChild(role);row.onclick=()=>{document.getElementById('authInp').value=d.code;};c.appendChild(row);});}
+// ══ INIT ══
+document.addEventListener('DOMContentLoaded',()=>{
+  loadState();
+  if(!S.chats||!S.chats.length||!S.codes||!S.codes.length)seed();
+  // Ensure msg keys exist for all chats
+  S.chats.forEach(c=>{if(!S.msg[c.id])S.msg[c.id]=[];});
+  saveState();
+  renderDemoCodes();renderAttach();
+  if(S.currentUserId){enterApp();}else{openScreen('screen-auth');}
+});
+// Globals for HTML onclick
+window.doAuth=doAuth;window.toggleSearch=toggleSearch;window.renderChats=renderChats;window.closeChat=closeChat;window.cancelReply=cancelReply;window.sendMsg=sendMsg;window.msgKd=msgKd;window.autoResize=autoResize;window.toggleAttach=toggleAttach;window.closeOverlays=closeOverlays;window.closeModal=closeModal;window.openCreatePostModal=openCreatePostModal;window.showChatInfo=showChatInfo;window.openScreen=openScreen;window.switchTab=switchTab;window.openAdminScreen=openAdminScreen;window.closeStoryView=closeStoryView;window.renderHWCreate=renderHWCreate;window.renderCreateGroup=renderCreateGroup;
+</script>
+</body>
+</html>
